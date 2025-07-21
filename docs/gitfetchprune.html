@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>リモート追跡ブランチのクリーンアップ | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "リモート追跡ブランチのクリーンアップ | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/docs/gitfetchprune.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>リモート追跡ブランチのクリーンアップ</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">リモート追跡ブランチのクリーンアップ</h1>
+                <div class="article-meta">
+                    <span>公開日: 2024年7月23日</span>
+                    <span>更新日: 2024年7月23日</span>
+                    <span>読了時間: 約5分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Git</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <h2>目的</h2>
+                <p>
+                    リモートリポジトリで削除されたブランチが、ローカルの<code>git branch -r</code>の一覧に残り続ける問題を解決する。これにより、ローカルのリモート追跡ブランチをリモートリポジトリの最新の状態と正確に同期させることが可能になる。
+                </p>
+
+                <h2>結論 (TL;DR)</h2>
+                <p>
+                    一時的に実行する場合は以下のコマンドを使用する。
+                </p>
+                <pre><code>$ git fetch --prune</code></pre>
+                <p>
+                    恒久的に設定し、<code>git fetch</code>時に常にクリーンアップを有効にする場合はこちらが推奨である。
+                </p>
+                <pre><code>$ git config --global fetch.prune true</code></pre>
+                
+                <h2>ワークフロー</h2>
+                <h3>1. 現状確認</h3>
+                <p>リモートで削除済みの<code>origin/feature/old-task</code>がローカルに残っている状態を確認する。</p>
+                <pre><code>$ git branch -r
+  origin/main
+  origin/feature/new-task
+  origin/feature/old-task  &lt;-- これを消したい</code></pre>
+
+                <h3>2. コマンド実行</h3>
+                <p><code>--prune</code>オプションを付けてfetchを実行する。</p>
+                <pre><code>$ git fetch --prune
+From github.com:your/repo
+ x [deleted]         (none)     -> origin/feature/old-task</code></pre>
+
+                <h3>3. 結果確認</h3>
+                <p>不要なリモート追跡ブランチが削除されたことを確認する。</p>
+                <pre><code>$ git branch -r
+  origin/main
+  origin/feature/new-task</code></pre>
+
+                <h2>詳細</h2>
+                <h3>自動化設定</h3>
+                <p>
+                    グローバル設定で<code>fetch.prune</code>を<code>true</code>にすることで、すべてのリポジトリで<code>git fetch</code>が自動的にpruneを実行するようになる。
+                </p>
+                <pre><code># 設定
+$ git config --global fetch.prune true
+
+# 確認
+$ git config --get fetch.prune
+true
+
+# 解除
+$ git config --global --unset fetch.prune</code></pre>
+                
+                <h3><code>git remote prune</code>との違い</h3>
+                <ul>
+                    <li><code>git fetch --prune</code>: リモートの最新情報を<b>取得し、その後</b>不要な追跡ブランチを削除する。</li>
+                    <li><code>git remote prune &lt;remote-name&gt;</code>: リモートの最新情報を取得<b>せず</b>、単に不要な追跡ブランチの削除のみを行う。</li>
+                </ul>
+                <blockquote>
+                    通常はfetchと同時に行う方が効率的であるため、<code>git fetch --prune</code>またはその設定が推奨される。
+                </blockquote>
+
+                <h3>タグのprune</h3>
+                <p>
+                    リモートで削除されたタグも合わせてローカルから削除したい場合は<code>--prune-tags</code>オプションを使用する。これは<code>fetch.prune</code>の設定とは独立している。
+                </p>
+                <pre><code>$ git fetch --prune --prune-tags</code></pre>
+                <p>
+                    これをデフォルトの挙動にしたい場合は、別途エイリアスを設定するのが一般的である。
+                </p>
+                <pre><code># .gitconfig に追記
+[alias]
+    fp = fetch --prune --prune-tags</code></pre>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

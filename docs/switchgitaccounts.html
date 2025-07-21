@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>ディレクトリごとにgitアカウントとSSHキーを自動で切り替える設定 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "ディレクトリごとにgitアカウントとSSHキーを自動で切り替える設定 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/docs/switchgitaccounts.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>ディレクトリごとにgitアカウントとSSHキーを自動で切り替える設定</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">ディレクトリごとにgitアカウントとSSHキーを自動で切り替える設定</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年7月21日</span>
+                    <span>読了時間: 約6分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Git</span>
+                    <span class="tag">CLI</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>
+                    会社用と個人用など、複数のGitHubアカウントを使い分けていると、意図しないアカウントでコミットやプッシュをしてしまうことがある。この問題は、リポジトリ（ディレクトリ）ごとにコミット作者と認証情報を自動で切り替えることで解決可能である。
+                </p>
+                <p>
+                    本記事では、そのための2段階の設定手順を解説する。
+                </p>
+
+                <h2>手順1: コミット作者情報 (user.name/email) の切り替え</h2>
+                <p>
+                    まず、<code>git commit</code>時の作者情報をリポジトリ単位で設定する。これにより、グローバル設定を上書きし、そのリポジトリ内でのみ有効な名前とメールアドレスを指定できる。
+                </p>
+                <p>
+                    設定したいリポジトリのディレクトリ内で、以下のコマンドを実行する。
+                </p>
+                <pre><code># 特定のリポジトリ内でのみ有効なユーザー名を設定
+git config --local user.name "Your Account Name"
+
+# 特定のリポジトリ内でのみ有効なメールアドレスを設定
+git config --local user.email "your-account@example.com"</code></pre>
+                <blockquote>
+                    <code>--local</code>フラグが、設定をそのリポジトリの<code>.git/config</code>ファイルに書き込むための鍵である。
+                </blockquote>
+
+                <h2>手順2: 認証キー (SSHキー) の切り替え</h2>
+                <p>
+                    次に、<code>git push</code>時に使用されるSSHキーをアカウントごとに切り替える。これは<code>~/.ssh/config</code>ファイルを編集して実現する。
+                </p>
+                <h3>2-1. ~/.ssh/config の設定</h3>
+                <p>
+                    <code>~/.ssh/config</code>ファイルに、アカウントごとの接続設定を追記する。ファイルが存在しない場合は新規作成する。
+                    ここでは、ホストのエイリアス（例: <code>github-work</code>, <code>github-private</code>）を定義し、それぞれに対応する秘密鍵ファイルを指定する。
+                </p>
+                <pre><code># Default GitHub account (e.g., private)
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_private
+  IdentitiesOnly yes
+
+# Work account
+Host github-work
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519_work
+  IdentitiesOnly yes</code></pre>
+                <p>
+                    上記の例では、<code>github-work</code>というホスト名で接続した場合、<code>~/.ssh/id_ed25519_work</code>の鍵が使われるようになる。
+                </p>
+
+                <h3>2-2. リモートURLの書き換え</h3>
+                <p>
+                    最後に、対象リポジトリのリモートURLを、先ほど<code>.ssh/config</code>で定義したホストエイリアスを使うように変更する。
+                </p>
+                <pre><code># 現在のリモートURLを確認 (変更前)
+# => origin  git@github.com:work-org/project.git (fetch)
+git remote -v
+
+# リモートURLを書き換える
+git remote set-url origin git@github-work:work-org/project.git
+
+# 変更後のリモートURLを確認
+# => origin  git@github-work:work-org/project.git (fetch)
+git remote -v</code></pre>
+                <p>
+                    URLのホスト部分が<code>github.com</code>からエイリアスの<code>github-work</code>に変わっている点に注意が必要である。これにより、このリポジトリで通信する際は自動的に<code>github-work</code>で設定したSSHキーが使用される。
+                </p>
+
+                <h2>まとめ</h2>
+                <p>
+                    以上の2つの設定により、リポジトリのディレクトリに移動するだけで、コミット作者と認証キーが自動的に適切なものに切り替わる環境が構築できた。
+                </p>
+                <ul>
+                    <li><strong>コミット作者:</strong> <code>git config --local</code>でリポジトリごとに設定。</li>
+                    <li><strong>認証キー:</strong> <code>~/.ssh/config</code>と<code>git remote set-url</code>でリポジトリごとに設定。</li>
+                </ul>
+                <p>
+                    これにより、アカウントの誤用を防ぎ、ストレスなく複数のプロジェクトを管理できるようになる。
+                </p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

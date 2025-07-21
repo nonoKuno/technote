@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>複数コミットを一つにまとめてマージする | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "複数コミットを一つにまとめてマージする | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/docs/gitmergesquash.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>複数コミットを一つにまとめてマージする</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">複数コミットを一つにまとめてマージする</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年7月21日</span>
+                    <span>読了時間: 約7分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Git</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <h2>目的</h2>
+                <p>
+                    <code>git merge --squash</code>は、フィーチャーブランチ上にある複数のコミットを単一のコミットに集約し、マージ先のブランチ（例: <code>main</code>）に適用するためのコマンドである。
+                </p>
+                <p>
+                    これにより、<code>main</code>ブランチのコミット履歴が、細かな作業履歴（"WIP", "fix"など）で汚れるのを防ぎ、機能単位のクリーンな履歴を維持できる。
+                </p>
+
+                <h2>ワークフロー</h2>
+                <p>
+                    <code>feature-branch</code>を<code>main</code>ブランチにスカッシュマージする手順である。
+                </p>
+
+                <h3>Step 1: マージ先ブランチへ移動</h3>
+                <pre><code>git checkout main</code></pre>
+
+                <h3>Step 2: --squashオプション付きでマージ実行</h3>
+                <p>
+                    この時点ではコミットは生成されず、<code>feature-branch</code>の全変更内容がステージングエリアに展開される。
+                </p>
+                <pre><code>git merge --squash feature-branch</code></pre>
+
+                <h3>Step 3: 状態確認</h3>
+                <p><code>git status</code>で、変更がステージングされていることを確認する。</p>
+                <pre><code>$ git status
+On branch main
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        new file:   new-feature.txt
+        modified:   existing-file.txt</code></pre>
+
+                <h3>Step 4: コミット作成</h3>
+                <p>ステージングされた変更を、一つのコミットとして記録する。コミットメッセージには、ブランチでの変更内容を要約して記述する。</p>
+                <pre><code>git commit -m "feat: ユーザー認証機能を追加"</code></pre>
+
+                <h2>通常マージとの比較</h2>
+                <p>下の図は、左側が通常の<code>git merge</code>、右側が<code>git merge --squash</code>を行った後のコミット履歴を表している。</p>
+                <div style="background:#f8f9fa; padding:20px; border-radius:6px; margin: 25px 0;">
+                    <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" aria-labelledby="svg-title" role="img" style="width:100%;">
+                        <title id="svg-title">通常マージとスカッシュマージの比較図</title>
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#95a5a6"></path>
+                            </marker>
+                        </defs>
+                        <rect width="800" height="400" fill="#f8f9fa"></rect>
+                        <line x1="400" y1="20" x2="400" y2="380" stroke="#ecf0f1" stroke-width="2"></line>
+                        <text x="200" y="50" font-family="'Segoe UI', sans-serif" font-size="20" font-weight="600" text-anchor="middle" fill="#2c3e50">通常マージ (git merge)</text>
+                        <text x="30" y="180" font-family="'Segoe UI', sans-serif" font-size="16" fill="#3498db">main</text>
+                        <path d="M 80 175 L 220 175" stroke="#3498db" stroke-width="3" marker-end="url(#arrow)"></path>
+                        <circle cx="80" cy="175" r="12" fill="#3498db"></circle><text x="75" y="180" fill="white" font-size="14">C1</text>
+                        <circle cx="150" cy="175" r="12" fill="#3498db"></circle><text x="145" y="180" fill="white" font-size="14">C2</text>
+                        <text x="30" y="270" font-family="'Segoe UI', sans-serif" font-size="16" fill="#2ecc71">feature</text>
+                        <path d="M 150 187 Q 150 265, 220 265 L 340 265" stroke="#2ecc71" stroke-width="3" fill="none" marker-end="url(#arrow)"></path>
+                        <circle cx="220" cy="265" r="12" fill="#2ecc71"></circle><text x="216" y="270" fill="white" font-size="14">F1</text>
+                        <circle cx="280" cy="265" r="12" fill="#2ecc71"></circle><text x="276" y="270" fill="white" font-size="14">F2</text>
+                        <path d="M 220 175 L 340 175" stroke="#3498db" stroke-width="3" marker-end="url(#arrow)"></path>
+                        <path d="M 280 253 L 280 187" stroke="#2ecc71" stroke-width="3" fill="none"></path>
+                        <circle cx="280" cy="175" r="14" fill="#9b59b6"></circle><text x="272" y="180" fill="white" font-size="14">M1</text>
+                        <text x="200" y="350" font-family="'Segoe UI', sans-serif" font-size="14" text-anchor="middle" fill="#5a6c7d">featureの履歴が残り、マージコミットが作られる</text>
+                        <text x="600" y="50" font-family="'Segoe UI', sans-serif" font-size="20" font-weight="600" text-anchor="middle" fill="#2c3e50">スカッシュマージ (--squash)</text>
+                        <text x="430" y="180" font-family="'Segoe UI', sans-serif" font-size="16" fill="#3498db">main</text>
+                        <path d="M 480 175 L 680 175" stroke="#3498db" stroke-width="3" marker-end="url(#arrow)"></path>
+                        <circle cx="480" cy="175" r="12" fill="#3498db"></circle><text x="475" y="180" fill="white" font-size="14">C1</text>
+                        <circle cx="550" cy="175" r="12" fill="#3498db"></circle><text x="545" y="180" fill="white" font-size="14">C2</text>
+                        <text x="430" y="270" font-family="'Segoe UI', sans-serif" font-size="16" fill="#bdc3c7">feature (参考)</text>
+                        <path d="M 550 187 Q 550 265, 620 265" stroke="#bdc3c7" stroke-width="3" stroke-dasharray="5,5" fill="none"></path>
+                        <circle cx="620" cy="265" r="12" fill="#bdc3c7"></circle><text x="616" y="270" fill="white" font-size="14">F1</text>
+                        <circle cx="680" cy="265" r="12" fill="#bdc3c7"></circle><text x="676" y="270" fill="white" font-size="14">F2</text>
+                        <circle cx="620" cy="175" r="14" fill="#1abc9c"></circle><text x="616" y="180" fill="white" font-size="14">S1</text>
+                        <text x="600" y="350" font-family="'Segoe UI', sans-serif" font-size="14" text-anchor="middle" fill="#5a6c7d">featureの変更が1つのコミットにまとまる</text>
+                    </svg>
+                </div>
+                
+                <h2>ユースケースと注意点</h2>
+                <h3>主なユースケース</h3>
+                <ul>
+                    <li><strong>クリーンな履歴の維持:</strong> メインブランチの履歴を機能単位で管理したい場合。</li>
+                    <li><strong>リバートの容易化:</strong> 機能追加に問題があった際、対象のスカッシュコミットをリバートするだけで対応が完了する。</li>
+                    <li><strong>プルリクエストのマージ:</strong> GitHub等のプルリクエストをマージする際のオプションとして利用されることが多い。</li>
+                </ul>
+                <h3>注意点</h3>
+                <ul>
+                    <li><strong>詳細履歴の消失:</strong> フィーチャーブランチでの開発過程（個々のコミット）はマージ先のブランチには残らない。</li>
+                    <li><strong>コンテキストの喪失:</strong> なぜその変更に至ったかの詳細な文脈が失われるため、後からの調査が困難になる場合がある。</li>
+                    <li><strong>マージ済みブランチの再利用:</strong> スカッシュマージ後、元のフィーチャーブランチをさらに更新して再度マージしようとすると、コンフリクトの原因になりやすい。マージ後はブランチを削除するのが基本である。</li>
+                </ul>
+                
+                <h2>結論</h2>
+                <p>
+                    <code>git merge --squash</code>は、メインブランチの履歴汚染を防ぐための有効な戦略である。開発過程の記録よりも履歴の可読性を重視する場合に特に有用であり、プロジェクトの運用ルールに応じて、通常の<code>merge</code>や<code>rebase</code>との使い分けが求められる。
+                </p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>
