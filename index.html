@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechNote - 技術系ブログ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f6f7;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 60px 0;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .article-card {
+            background: #fafbfc;
+            border: 1px solid #e1e8ed;
+            padding: 25px;
+            border-radius: 6px;
+            transition: transform 0.2s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .article-title {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .article-summary {
+            color: #5a6c7d;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .article-meta {
+            color: #95a5a6;
+            font-size: 0.85em;
+            margin-bottom: 20px;
+        }
+
+        .read-more-btn {
+            background: #34495e;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.2s ease;
+        }
+
+        .read-more-btn:hover {
+            background: #2c3e50;
+        }
+
+        .about-section {
+            background: #ecf0f1;
+            padding: 30px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+
+        .about-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .about-section p {
+            color: #5a6c7d;
+        }
+
+        .footer {
+            text-align: center;
+            color: #95a5a6;
+            padding: 30px 0;
+            border-top: 1px solid #e1e8ed;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 40px 0;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>TechNote</h1>
+            <p>最新の技術トレンドと実践的な開発ノウハウをお届けする技術ブログです。フロントエンドからバックエンド、インフラまで幅広くカバーしています。</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="main-content">
+            <h2 class="section-title">最新記事</h2>
+            
+            <div class="articles-grid">
+                <article class="article-card">
+                    <h3 class="article-title">React HooksとTypeScriptで作る現代的なWebアプリケーション</h3>
+                    <p class="article-summary">React HooksとTypeScriptを組み合わせた効率的な開発手法について解説します。実際のプロジェクトで使える実践的なTipsも紹介。</p>
+                    <div class="article-meta">2024年3月15日 | React, TypeScript</div>
+                    <a href="#" class="read-more-btn">記事を読む</a>
+                </article>
+
+                <article class="article-card">
+                    <h3 class="article-title">Docker ComposeとNginxで構築するマイクロサービス環境</h3>
+                    <p class="article-summary">Docker Composeを使ったマイクロサービスアーキテクチャの構築方法を詳しく解説。Nginxでのロードバランシング設定も含めて説明します。</p>
+                    <div class="article-meta">2024年3月10日 | Docker, Infrastructure</div>
+                    <a href="#" class="read-more-btn">記事を読む</a>
+                </article>
+            </div>
+        </div>
+
+        <div class="about-section">
+            <h3>このブログについて</h3>
+            <p>TechNoteは、実務で培った技術知識と最新のトレンドを共有する技術ブログです。複雑な技術概念をわかりやすく説明し、実際の開発現場で役立つ情報をお届けすることを目指しています。</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 TechNote. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
