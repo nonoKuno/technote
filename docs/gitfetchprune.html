@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>git fetch --prune: リモート追跡ブランチのクリーンアップ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f9fafb; /* bg-gray-50 */
+            color: #1f2937; /* text-gray-800 */
+        }
+        h1, h2, h3 {
+            font-weight: 700;
+            color: #111827; /* text-gray-900 */
+        }
+        /* コードブロックのスタイル */
+        pre {
+            background-color: #1f2937; /* dark gray */
+            color: #e5e7eb; /* light gray */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Menlo', 'Consolas', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        code {
+            font-family: 'Menlo', 'Consolas', 'Courier New', monospace;
+        }
+        .code-inline {
+            background-color: #e5e7eb; /* light gray */
+            color: #374151; /* dark gray */
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-size: 0.9em;
+        }
+        .section-title {
+            font-size: 1.5rem; /* text-2xl */
+            border-bottom: 2px solid #e5e7eb; /* border-gray-200 */
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mx-auto max-w-3xl px-4 py-12">
+        
+        <header class="mb-10">
+            <h1 class="text-4xl">git fetch --prune</h1>
+            <p class="text-gray-600 mt-2">リモートで削除されたブランチをローカルの追跡ブランチから一掃する</p>
+        </header>
+
+        <article class="space-y-10">
+            
+            <!-- 目的 -->
+            <section>
+                <h2 class="section-title">目的</h2>
+                <p class="leading-relaxed">
+                    リモートリポジトリで削除されたブランチが、ローカルの <code class="code-inline">git branch -r</code> の一覧に残り続ける問題を解決する。<br>
+                    これにより、ローカルのリモート追跡ブランチをリモートリポジトリの最新の状態と正確に同期させる。
+                </p>
+            </section>
+
+            <!-- 結論 / TL;DR -->
+            <section>
+                <h2 class="section-title">結論 (TL;DR)</h2>
+                <p class="leading-relaxed mb-4">
+                    一時的に実行する場合：
+                </p>
+                <pre><code>$ git fetch --prune</code></pre>
+                <p class="leading-relaxed mt-6 mb-4">
+                    恒久的に設定し、<code class="code-inline">git fetch</code> 時に常にお掃除を有効にする場合（推奨）：
+                </p>
+                <pre><code>$ git config --global fetch.prune true</code></pre>
+            </section>
+            
+            <!-- ワークフロー -->
+            <section>
+                <h2 class="section-title">ワークフロー</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="font-semibold text-lg mb-2">1. 現状確認</h3>
+                        <p class="mb-2">リモートで削除済みの <code class="code-inline">origin/feature/old-task</code> がローカルに残っている。</p>
+                        <pre><code>$ git branch -r
+  origin/main
+  origin/feature/new-task
+  origin/feature/old-task  &lt;-- これを消したい</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-lg mb-2">2. コマンド実行</h3>
+                        <p class="mb-2"><code class="code-inline">--prune</code> オプション付きでfetchを実行。</p>
+                        <pre><code>$ git fetch --prune
+From github.com:your/repo
+ x [deleted]         (none)     -> origin/feature/old-task</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-lg mb-2">3. 結果確認</h3>
+                        <p class="mb-2">不要なリモート追跡ブランチが削除されたことを確認。</p>
+                        <pre><code>$ git branch -r
+  origin/main
+  origin/feature/new-task</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 詳細解説 -->
+            <section>
+                <h2 class="section-title">詳細</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-semibold text-lg mb-2">自動化設定</h3>
+                        <p>グローバル設定で <code class="code-inline">fetch.prune</code> を <code class="code-inline">true</code> にすることで、すべてのリポジトリで <code class="code-inline">git fetch</code> が自動的にpruneを実行するようになる。</p>
+                        <pre><code># 設定
+$ git config --global fetch.prune true
+
+# 確認
+$ git config --get fetch.prune
+true
+
+# 解除
+$ git config --global --unset fetch.prune</code></pre>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-lg mb-2"><code class="code-inline">git remote prune</code> との違い</h3>
+                        <ul class="list-disc list-inside space-y-2 leading-relaxed">
+                            <li><code class="code-inline">git fetch --prune</code>: リモートの最新情報を<strong class="font-semibold">取得し、その後</strong>不要な追跡ブランチを削除する。</li>
+                            <li><code class="code-inline">git remote prune &lt;remote-name&gt;</code>: リモートの最新情報を取得<strong class="font-semibold">せず</strong>、単に不要な追跡ブランチの削除のみを行う。</li>
+                        </ul>
+                        <p class="mt-2">通常は <code class="code-inline">fetch</code> と同時に行う方が効率的であるため、<code class="code-inline">git fetch --prune</code> またはその設定が推奨される。</p>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-lg mb-2">タグのprune</h3>
+                        <p>リモートで削除されたタグも合わせてローカルから削除したい場合は <code class="code-inline">--prune-tags</code> オプションを使用する。<code class="code-inline">fetch.prune</code> の設定とは独立している。</p>
+                        <pre><code>$ git fetch --prune --prune-tags</code></pre>
+                        <p class="mt-2">これをデフォルトにしたい場合は、別途エイリアスを設定するのが一般的。</p>
+                        <pre><code># .gitconfig に追記
+[alias]
+    fp = fetch --prune --prune-tags</code></pre>
+                    </div>
+                </div>
+            </section>
+        </article>
+        
+        <footer class="text-center text-gray-500 mt-16 pt-8 border-t border-gray-200">
+            <p>&copy; 2024 Your Blog Name</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>git merge --squash: 複数コミットを一つにまとめてマージする</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+        }
+        .code-block {
+            position: relative;
+            background-color: #2d3748; /* bg-gray-800 */
+            color: #e2e8f0; /* text-gray-200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        .code-block pre {
+            margin: 0;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #4a5568;
+            color: #e2e8f0;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.8em;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .code-block:hover .copy-btn {
+            opacity: 1;
+        }
+        .copy-btn:hover {
+            background-color: #718096;
+        }
+        .inline-code {
+            background-color: #edf2f7; /* bg-gray-200 */
+            color: #2d3748; /* text-gray-800 */
+            padding: 0.2em 0.4em;
+            margin: 0 0.2em;
+            border-radius: 0.25rem;
+            font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        h2 {
+            border-bottom: 2px solid #e2e8f0; /* border-gray-200 */
+            padding-bottom: 0.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto max-w-4xl px-4 py-8 md:py-12">
+        
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">git merge --squash: 複数コミットを一つにまとめる</h1>
+            <p class="text-lg text-gray-600">フィーチャーブランチのコミット履歴を統合し、mainブランチをクリーンに保つ</p>
+        </header>
+
+        <main class="bg-white p-6 md:p-10 rounded-lg shadow-lg">
+
+            <section>
+                <h2 class="text-2xl font-bold">目的</h2>
+                <p>
+                    <code class="inline-code">git merge --squash</code>は、フィーチャーブランチ上にある複数のコミットを単一のコミットに集約し、マージ先のブランチ（例: <code class="inline-code">main</code>）に適用するためのコマンドである。
+                </p>
+                <p class="mt-4">
+                    これにより、<code class="inline-code">main</code>ブランチのコミット履歴が、細かな作業履歴（"WIP", "fix"など）で汚れるのを防ぎ、機能単位のクリーンな履歴を維持できる。
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold">ワークフロー</h2>
+                <p>
+                    <code class="inline-code">feature-branch</code>を<code class="inline-code">main</code>ブランチにスカッシュマージする手順。
+                </p>
+
+                <h3 class="text-xl font-semibold">Step 1: マージ先ブランチへ移動</h3>
+                <div class="code-block mt-2">
+                    <pre><code>git checkout main</code></pre>
+                </div>
+
+                <h3 class="text-xl font-semibold">Step 2: --squashオプション付きでマージ実行</h3>
+                <p>
+                    この時点ではコミットは生成されず、<code class="inline-code">feature-branch</code>の全変更内容がステージングエリアに展開される。
+                </p>
+                <div class="code-block mt-2">
+                    <pre><code>git merge --squash feature-branch</code></pre>
+                </div>
+
+                <h3 class="text-xl font-semibold">Step 3: 状態確認</h3>
+                <p><code class="inline-code">git status</code>で、変更がステージングされていることを確認。</p>
+                <div class="code-block mt-2">
+<pre><code>$ git status
+On branch main
+Changes to be committed:
+  (use "git restore --staged &lt;file&gt;..." to unstage)
+        new file:   new-feature.txt
+        modified:   existing-file.txt
+</code></pre>
+                </div>
+
+                <h3 class="text-xl font-semibold">Step 4: コミット作成</h3>
+                <p>ステージングされた変更を、一つのコミットとして記録する。コミットメッセージには、ブランチでの変更内容を要約して記述する。</p>
+                <div class="code-block mt-2">
+                    <pre><code>git commit -m "feat: ユーザー認証機能を追加"</code></pre>
+                </div>
+            </section>
+            
+            <section>
+                <h2 class="text-2xl font-bold">通常マージとの比較</h2>
+                <div class="mt-6 w-full bg-gray-100 p-4 rounded-lg shadow-inner">
+                    <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" aria-labelledby="svg-title" role="img" class="w-full">
+                        <title id="svg-title">通常マージとスカッシュマージの比較図</title>
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#9ca3af"></path>
+                            </marker>
+                        </defs>
+                        
+                        <!-- 背景と区切り線 -->
+                        <rect width="800" height="400" fill="#f3f4f6"></rect>
+                        <line x1="400" y1="20" x2="400" y2="380" stroke="#d1d5db" stroke-width="2"></line>
+
+                        <!-- 左側: 通常マージ -->
+                        <text x="200" y="50" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#111827">通常マージ (git merge)</text>
+                        
+                        <!-- mainブランチ -->
+                        <text x="30" y="180" font-family="sans-serif" font-size="18" fill="#3b82f6">main</text>
+                        <path d="M 80 175 L 220 175" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrow)"></path>
+                        <circle cx="80" cy="175" r="12" fill="#3b82f6"></circle><text x="75" y="180" fill="white" font-size="14">C1</text>
+                        <circle cx="150" cy="175" r="12" fill="#3b82f6"></circle><text x="145" y="180" fill="white" font-size="14">C2</text>
+                        
+                        <!-- featureブランチ -->
+                        <text x="30" y="270" font-family="sans-serif" font-size="18" fill="#10b981">feature</text>
+                        <path d="M 150 187 Q 150 265, 220 265 L 340 265" stroke="#10b981" stroke-width="3" fill="none" marker-end="url(#arrow)"></path>
+                        <circle cx="220" cy="265" r="12" fill="#10b981"></circle><text x="216" y="270" fill="white" font-size="14">F1</text>
+                        <circle cx="280" cy="265" r="12" fill="#10b981"></circle><text x="276" y="270" fill="white" font-size="14">F2</text>
+
+                        <!-- マージコミット -->
+                        <path d="M 220 175 L 340 175" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrow)"></path>
+                        <path d="M 280 253 L 280 187" stroke="#10b981" stroke-width="3" fill="none"></path>
+                        <circle cx="280" cy="175" r="14" fill="#6366f1"></circle><text x="272" y="180" fill="white" font-size="14">M1</text>
+                        <text x="200" y="350" font-family="sans-serif" font-size="16" text-anchor="middle" fill="#4b5563">featureの履歴が残り、マージコミットが作られる</text>
+
+                        <!-- 右側: スカッシュマージ -->
+                        <text x="600" y="50" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#111827">スカッシュマージ (--squash)</text>
+                        
+                        <!-- mainブランチ -->
+                        <text x="430" y="180" font-family="sans-serif" font-size="18" fill="#3b82f6">main</text>
+                        <path d="M 480 175 L 680 175" stroke="#3b82f6" stroke-width="3" marker-end="url(#arrow)"></path>
+                        <circle cx="480" cy="175" r="12" fill="#3b82f6"></circle><text x="475" y="180" fill="white" font-size="14">C1</text>
+                        <circle cx="550" cy="175" r="12" fill="#3b82f6"></circle><text x="545" y="180" fill="white" font-size="14">C2</text>
+                        
+                        <!-- featureブランチ (参考) -->
+                        <text x="430" y="270" font-family="sans-serif" font-size="18" fill="#a1a1aa">feature (参考)</text>
+                        <path d="M 550 187 Q 550 265, 620 265" stroke="#a1a1aa" stroke-width="3" stroke-dasharray="5,5" fill="none"></path>
+                        <circle cx="620" cy="265" r="12" fill="#a1a1aa"></circle><text x="616" y="270" fill="white" font-size="14">F1</text>
+                        <circle cx="680" cy="265" r="12" fill="#a1a1aa"></circle><text x="676" y="270" fill="white" font-size="14">F2</text>
+
+                        <!-- スカッシュコミット -->
+                        <circle cx="620" cy="175" r="14" fill="#8b5cf6"></circle><text x="616" y="180" fill="white" font-size="14">S1</text>
+                        <text x="600" y="350" font-family="sans-serif" font-size="16" text-anchor="middle" fill="#4b5563">featureの変更が1つのコミットにまとまる</text>
+                    </svg>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-2">左: 通常マージ（履歴が残る） / 右: スカッシュマージ（履歴が一本化される）</p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold">ユースケースと注意点</h2>
+                <div class="grid md:grid-cols-2 gap-8 mt-4">
+                    <div>
+                        <h3 class="text-xl font-semibold text-green-700">主なユースケース</h3>
+                        <ul class="list-disc list-inside mt-2 space-y-2">
+                            <li><strong>クリーンな履歴の維持:</strong> メインブランチの履歴を機能単位で管理したい場合。</li>
+                            <li><strong>リバートの容易化:</strong> 機能追加に問題があった際、対象のスカッシュコミットをリバートするだけで対応が完了する。</li>
+                            <li><strong>プルリクエストのマージ:</strong> GitHub等のプルリクエストをマージする際のオプションとして利用されることが多い。</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-red-700">注意点</h3>
+                        <ul class="list-disc list-inside mt-2 space-y-2">
+                            <li><strong>詳細履歴の消失:</strong> フィーチャーブランチでの開発過程（個々のコミット）はマージ先のブランチには残らない。</li>
+                            <li><strong>コンテキストの喪失:</strong> なぜその変更に至ったかの詳細な文脈が失われるため、後からの調査が困難になる場合がある。</li>
+                            <li><strong>マージ済みブランチの再利用:</strong> スカッシュマージ後、元のフィーチャーブランチをさらに更新して再度マージしようとすると、コンフリクトの原因になりやすい。マージ後はブランチを削除するのが基本。</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold">結論</h2>
+                <p>
+                    <code class="inline-code">git merge --squash</code>は、メインブランチの履歴汚染を防ぐための有効な戦略である。
+                </p>
+                <p class="mt-4">
+                    開発過程の記録よりも履歴の可読性を重視する場合に特に有用。プロジェクトの運用ルールに応じて、通常の<code class="inline-code">merge</code>や<code class="inline-code">rebase</code>との使い分けが求められる。
+                </p>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-12 text-gray-500">
+            <p>&copy; 2025 あなたのブログ名. All Rights Reserved.</p>
+        </footer>
+
+    </div>
+    <script>
+        // コードブロックにコピーボタンを追加するスクリプト
+        document.querySelectorAll('.code-block').forEach(block => {
+            const button = document.createElement('button');
+            button.innerText = 'Copy';
+            button.className = 'copy-btn';
+            
+            button.addEventListener('click', () => {
+                const code = block.querySelector('pre').innerText;
+                const textarea = document.createElement('textarea');
+                textarea.value = code;
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    button.innerText = 'Copied!';
+                } catch (err) {
+                    button.innerText = 'Error';
+                }
+                document.body.removeChild(textarea);
+                
+                setTimeout(() => {
+                    button.innerText = 'Copy';
+                }, 2000);
+            });
+            
+            block.appendChild(button);
+        });
+    </script>
+</body>
+</html>
