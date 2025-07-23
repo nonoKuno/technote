@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>Gitで履歴のない、まっさらなブランチを作成する方法 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Gitで履歴のない、まっさらなブランチを作成する方法 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/docs/gitcheckoutorphan.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>Gitで履歴のない、まっさらなブランチを作成する方法</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Gitで履歴のない、まっさらなブランチを作成する方法</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年7月23日</span>
+                    <span>読了時間: 約5分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Git</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>
+                    Gitでプロジェクトを管理していると、時として既存のコミット履歴を一切引き継がない、完全に独立したブランチを作成したい場面がある。例えば、ソースコードとは別にドキュメントやビルド成果物だけを管理するブランチなどがそれに該当する。
+                </p>
+                <p>
+                    本記事では、<code>git checkout --orphan</code> コマンドを用いて、このような「まっさらな」ブランチを作成する手順を技術的に解説する。
+                </p>
+
+                <h2>`git checkout --orphan` とは何か？</h2>
+                <p>
+                    <code>git checkout --orphan &lt;branch-name&gt;</code> は、指定した名前の新しいブランチを作成し、そこに切り替えるコマンドである。通常の <code>git checkout -b</code> との決定的な違いは、親コミットを持たない、つまりコミット履歴が完全に空のブランチを作成する点にある。このブランチは、リポジトリ内のどのコミットとも繋がっていないため、「孤児（orphan）」と呼ばれる。
+                </p>
+                <blockquote>
+                    ただし、このコマンドを実行した直後、作業ディレクトリとインデックスには、切り替え元のブランチのファイルがそのまま残存している。そのため、完全にクリーンな状態から始めるには、これらのファイルを一度リセットする追加の操作が必要である。
+                </blockquote>
+
+                <h2>具体的な手順</h2>
+                
+                <h3>ステップ1: orphanブランチの作成</h3>
+                <p>
+                    まず、履歴のない新しいブランチを作成する。ここでは例として <code>gh-pages</code> というブランチ名を使用する。
+                </p>
+                <pre><code>git checkout --orphan gh-pages</code></pre>
+                <p>
+                    このコマンドにより、<code>gh-pages</code> ブランチに切り替わる。この時点ではコミットはまだ存在しない。
+                </p>
+
+                <h3>ステップ2: インデックスのクリア</h3>
+                <p>
+                    切り替え元ブランチのファイルがインデックス（ステージングエリア）に残っているため、これらをすべて削除し、作業ディレクトリをクリーンな状態にする。
+                </p>
+                <pre><code>git rm -rf .</code></pre>
+                <p>
+                    <code>-r</code> は再帰的、<code>-f</code> は強制実行を意味する。これにより、インデックスからすべてのファイルが削除される。
+                </p>
+
+                <h3>ステップ3: 最初のコミットの作成</h3>
+                <p>
+                    ブランチが完全に空になったので、新しいファイルを追加して最初のコミットを作成する。これがこのブランチの歴史の起点となる。
+                </p>
+                <pre><code># 新しいファイルを作成・追加
+echo "My GitHub Pages site" > index.html
+git add index.html
+
+# 最初のコミットを実行
+git commit -m "Initial commit for gh-pages"</code></pre>
+                
+                <h2>ユースケース</h2>
+                <p>
+                    このテクニックが特に有効なシナリオは以下の通りである。
+                </p>
+                <ul>
+                    <li><strong>GitHub Pages (`gh-pages`) ブランチ:</strong> ソースコードとは別に、ビルドされた静的サイトのファイルだけをクリーンな状態で管理する場合。</li>
+                    <li><strong>ドキュメント管理:</strong> ソースコードの履歴とは完全に切り離して、ドキュTキュメントの変更履歴だけを独立して管理したい場合。</li>
+                    <li><strong>成果物のデプロイ:</strong> ビルド成果物やバイナリなど、ソースリポジトリに含めたくないがバージョン管理はしたいものを格納するブランチとして利用。</li>
+                    <li><strong>完全な新規実験:</strong> 既存のコードベースに一切影響されず、ゼロから実験的なコードを書き始めたい場合。</li>
+                </ul>
+
+                <h2>まとめ</h2>
+                <p>
+                    <code>git checkout --orphan</code> は、特定の目的のためにコミット履歴を分離したい場合に極めて有効な手段である。手順自体はシンプルだが、コマンド実行後のインデックスの状態を正しく理解し、適切にクリアすることが重要である。
+                </p>
+                <p>
+                    このテクニックを習得することで、より柔軟でクリーンなGitリポジトリの管理が可能となるだろう。
+                </p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>
