@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>git add の取り消し方 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "git add の取り消し方 | nonoKuno - TechNote",
+      "url": "YOUR_PAGE_URL"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>git add の取り消し方</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">git add の取り消し方</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年7月27日</span>
+                    <span>読了時間: 約5分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Git</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>gitでステージングした変更を取り消す、代表的な2つの方法について解説する。</p>
+
+                <h2>おすすめの方法: `git restore`</h2>
+                <p>Git v2.23から導入された、より安全で直感的なコマンドである。ステージングの取り消しに特化しているため、誤操作のリスクが低い。</p>
+
+                <h3>特定のファイルを取り消す</h3>
+                <p>`--staged` オプションを付けて、取り消したいファイル名を指定する。</p>
+                <pre><code>git restore --staged &lt;ファイル名&gt;</code></pre>
+                
+                <h3>ステージングした全てのファイルを取り消す</h3>
+                <p>カレントディレクトリを意味する `.` を指定すると、全ての変更を一度に取り消せる。</p>
+                <pre><code>git restore --staged .</code></pre>
+
+                <h2>従来の方法: `git reset`</h2>
+                <p>古くから使われている多機能なコマンドである。古いバージョンのGit環境でも動作する。</p>
+
+                <h3>特定のファイルを取り消す</h3>
+                <p>取り消したいファイル名を指定する。`HEAD` は省略可能である。</p>
+                <pre><code>git reset HEAD &lt;ファイル名&gt;</code></pre>
+
+                <h3>ステージングした全てのファイルを取り消す</h3>
+                <p>ファイル名を指定しないことで、ステージングエリアの全ての変更を取り消す。</p>
+                <pre><code>git reset</code></pre>
+                
+                <h2>どちらを使うべきか？</h2>
+                <p>基本的には、以下の基準で判断すると良い。</p>
+                <ul>
+                    <li><strong>`git restore`</strong>: Gitのバージョンが2.23以降であれば、こちらを第一候補とすべきである。役割が明確で安全である。</li>
+                    <li><strong>`git reset`</strong>: 古いGit環境で作業する場合や、`reset` の他の機能と合わせて使う場合に便利である。</li>
+                </ul>
+
+                <blockquote>
+                <strong>重要:</strong> どちらのコマンドも、ファイルの変更内容自体は消去しない。ステージングエリアからワーキングディレクトリに戻すだけなので、安心して実行できる。
+                </blockquote>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>
