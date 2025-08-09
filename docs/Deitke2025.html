@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>論文解説『Molmo and PixMo: Open Weights and Open Data for State-of-the-Art Vision-Language Models』 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "論文解説『Molmo and PixMo: Open Weights and Open Data for State-of-the-Art Vision-Language Models』 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/Deitke2025.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>Molmo and PixMo: Open Weights and Open Data for State-of-the-Art Vision-Language Models</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">論文解説『Molmo and PixMo: Open Weights and Open Data for State-of-the-Art Vision-Language Models』</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年8月9日</span>
+                    <span>読了時間: 約10分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">AI</span>
+                    <span class="tag">論文解説</span>
+                    <span class="tag">CVPR</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <h2>概要</h2>
+                <p>
+                    本稿では、Allen Institute for AIなどが開発した視覚言語モデル（VLM）の新しいファミリー「Molmo」と、その学習に用いられたデータセット群「PixMo」について解説する。Molmoは、モデルの重みと学習データを完全に公開したオープンなモデルでありながら、多くのプロプライエタリ（非公開）モデルを凌駕し、GPT-4oに次ぐ性能を達成した。この成果の基盤には、プロプライエタリVLMからの合成データ（蒸留）に一切依存せず、独自の手法で収集された高品質なPixMoデータセットが存在する。
+                </p>
+                
+                <h2>背景と課題</h2>
+                <p>
+                    近年の高性能なVLMの多くは、そのモデルや学習データが非公開であるプロプライエタリシステムであった。オープンなモデルを開発する試みはあったものの、その多くは性能向上のためにGPT-4Vなどのプロプライエタリモデルが生成した合成データに依存していた。このアプローチは、クローズドなモデルの知識をオープンなモデルに転写する「蒸留（distillation）」に他ならず、研究コミュニティは「プロプライエタリモデルに依存せずに高性能なVLMを構築する方法」に関する基礎知識を欠いていた。
+                </p>
+
+                <h2>本研究の革新性</h2>
+                <p>
+                    本研究の価値は、単に高性能なモデルを開発した点に留まらず、その開発プロセス全体において、既存のパラダイムに挑戦する複数の革新的な手法を導入した点にある。
+                </p>
+                
+                <h3>1. 基本理念：VLM蒸留からの脱却</h3>
+                <ul>
+                    当時主流であった、GPT-4VのようなプロプライエタリVLMが生成した合成データを用いてオープンモデルを学習させる「蒸留（distillation）」の手法を完全に排除。これにより、クローズドなシステムに依存せずに、ゼロから最先端のVLMを構築するための基礎知識と方法論を学術界に提供した。
+                </ul>
+
+                <h3>2. データ収集における革新 (PixMo)</h3>
+                <ul>
+                    <li>
+                        <strong>手法1: 口頭説明に基づく詳細キャプション生成 (PixMo-Cap)</strong><br>
+                        アノテーターがキーボードで入力する代わりに、画像を60〜90秒間<strong>口頭で説明</strong>する「モダリティ変換」を採用。この手法により、タイピングよりも遥かに詳細で自然な（平均196語）キャプションの収集が可能になった。収集された音声は、外部VLMが使用されていないことの証明（audio receipt）としても機能する。
+                    </li>
+                    <li>
+                        <strong>手法2: 点座標による高速な参照アノテーション (PixMo-Points)</strong><br>
+                        物体を矩形で囲むバウンディングボックスの代わりに、<strong>2Dの点座標</strong>で指示する手法を導入。これによりアノテーション速度が大幅に向上し、大規模な参照データ（230万件）の構築が実現した。このデータセットは、モデルに「Point-and-Count」（物体を一つずつ指し示してから計数する）や、回答の根拠を画像上でポイントして示すといった新たな能力をもたらした。
+                    </li>
+                </ul>
+                
+                <h3>3. モデルと学習手法における革新</h3>
+                <ul>
+                    <li>
+                        <strong>手法3: オーバーラップ・マルチクロップ戦略</strong><br>
+                         高解像度画像を複数の領域（クロップ）に分割する際、隣接するクロップを意図的に<strong>部分重複（オーバーラップ）</strong>させる。これにより、クロップの境界部分にある物体が分断され、文脈情報が失われる問題を軽減し、性能を著しく改善した。
+                    </li>
+                    <li>
+                        <strong>手法4: 効率化された学習プロセス</strong><br>
+                        多くのVLMで採用されていた「Vision-Language Connectorのみを事前学習する」段階を省略し、学習パイプラインを簡潔かつ高速にした。また、事前学習中、テキストトークンにのみドロップアウトを適用し、モデルが視覚的特徴をより重視するように促した。さらに、1枚の画像に対する複数のQ&Aペアなどを単一のシーケンスにまとめ、画像のエンコード処理の冗長性を排除することで、学習時間を50%以上短縮した。
+                    </li>
+                </ul>
+
+                <h2>性能評価</h2>
+                <ul>
+                    <li>最も高性能な<strong>Molmo-72B</strong>は、11のアカデミックベンチマークの平均スコアおよび人間評価のEloレーティングにおいて、<strong>GPT-4oに次ぐ2位</strong>を記録した。</li>
+                    <li>この性能は、<strong>Gemini 1.5 Pro/Flash、Claude 3.5 Sonnetといった主要なプロプライエタリモデルを上回る</strong>ものである。</li>
+                    <li>特に、PixMoデータセットで重点的に学習した<strong>計数タスクや自然画像の理解（RealWorldQA）において、全モデル中で最高の性能</strong>を示した。</li>
+                </ul>
+                <blockquote>
+                    Molmo-72Bは、公開されているモデル（Open weights）およびデータ蒸留を用いたモデルの中で最高の性能を示し、API経由でのみ利用可能なプロプライエタリモデル群と比較しても遜色ない結果を残している。(論文 Table 1参照)
+                </blockquote>
+                
+                <h2>結論と意義</h2>
+                <p>
+                    本研究は、プロプライエタリモデルからのデータ蒸留に依存することなく、完全にオープンなモデルとデータを用いて最先端の性能を持つVLMを構築できることを実証した。MolmoとPixMoの公開は、VLM分野における研究の透明性と再現性を高め、今後の学術的探求を加速させる上で極めて重要な貢献である。
+                </p>
+
+                <h2>原著論文</h2>
+                <p>本記事で解説した論文は、以下のリンクから閲覧できる。</p>
+                <p><a href="https://openaccess.thecvf.com/content/CVPR2025/papers/Deitke_Molmo_and_PixMo_Open_Weights_and_Open_Data_for_State-of-the-Art_CVPR_2025_paper.pdf" target="_blank" rel="noopener noreferrer">Deitke, M., et al. (2025). Molmo and PixMo: Open Weights and Open Data for State-of-the-Art Vision-Language Models. In CVPR.</a></p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>
