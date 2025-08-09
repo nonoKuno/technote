@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>UbuntuでSSD/HDDを自動マウントする設定 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "UbuntuでSSD/HDDを自動マウントする設定 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/linuxfstab.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>UbuntuでSSD/HDDを自動マウントする設定</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">UbuntuでSSD/HDDを自動マウントする設定</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年8月9日</span>
+                    <span>読了時間: 約5分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Linux</span>
+                    <span class="tag">CLI</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>
+                    Ubuntu環境において、内蔵または外付けのSSDやHDDを起動時に自動でマウントするための設定手順を記す。ここでは、永続的なマウント設定ファイルである <code>/etc/fstab</code> を利用する方法を解説する。
+                </p>
+
+                <h2>1. デバイスUUIDの確認</h2>
+                <p>
+                    最初に、マウント対象デバイスのUUID（Universally Unique Identifier）とファイルシステムの形式（TYPE）を確認する。デバイス名（<code>/dev/sdb1</code>など）は接続順で変わる可能性があるため、UUIDで指定するのが確実である。
+                </p>
+                <pre><code>sudo blkid</code></pre>
+                <p>または、以下のコマンドでも確認できる。</p>
+                <pre><code>lsblk -f</code></pre>
+                <blockquote>
+                    実行結果例：<br>
+                    <code>/dev/sdb1: UUID="a1b2c3d4-e5f6-7890-1234-567890abcdef" TYPE="ext4" ...</code>
+                </blockquote>
+
+                <h2>2. マウントポイントの作成</h2>
+                <p>
+                    デバイスをマウントするためのディレクトリ（マウントポイント）を作成する。場所は任意だが、慣例的に<code>/mnt/</code>や<code>/media/</code>配下に作成することが多い。
+                </p>
+                <pre><code>sudo mkdir /mnt/data</code></pre>
+
+                <h2>3. /etc/fstabの編集</h2>
+                <p>
+                    設定ファイル<code>/etc/fstab</code>にマウント情報を追記する。編集に失敗するとシステムが起動しなくなる可能性もあるため、作業前に必ずバックアップを取ることを推奨する。
+                </p>
+                <h3>バックアップ作成</h3>
+                <pre><code>sudo cp /etc/fstab /etc/fstab.bak</code></pre>
+                <h3>fstabファイルを開く</h3>
+                <pre><code>sudo nano /etc/fstab</code></pre>
+                <h3>追記する行の書式</h3>
+                <p>ファイルの末尾に、以下の書式で1行追記する。</p>
+                <pre><code>UUID=&lt;UUID&gt;   &lt;マウントポイント&gt;   &lt;ファイルシステム&gt;   &lt;オプション&gt;   &lt;ダンプ&gt;   &lt;fsck&gt;</code></pre>
+                <h3>記述例 (ext4)</h3>
+                <p>一般的なext4ファイルシステムの場合。</p>
+                <pre><code>UUID=a1b2c3d4-e5f6-7890-1234-567890abcdef /mnt/data ext4 defaults 0 2</code></pre>
+                <h3>記述例 (NTFS)</h3>
+                <p>Windowsと共用するNTFSフォーマットの場合。所有者情報（uid, gid）を指定することが多い。</p>
+                <pre><code>UUID=1234ABCD5678EFGH /mnt/data ntfs defaults,uid=1000,gid=1000 0 0</code></pre>
+
+                <h2>4. 設定の反映と確認</h2>
+                <p>
+                    <code>fstab</code>の編集内容をシステムに反映させ、正しくマウントされたかを確認する。
+                </p>
+                <h3>設定の反映</h3>
+                <p>このコマンドを実行してエラーが表示されなければ、<code>fstab</code>の記述は正しい。</p>
+                <pre><code>sudo mount -a</code></pre>
+                <h3>マウント状態の確認</h3>
+                <p>以下のコマンドを実行し、結果一覧の中に作成したマウントポイント（例: <code>/mnt/data</code>）が表示されていれば成功である。</p>
+                <pre><code>df -h</code></pre>
+
+                <h2>まとめ</h2>
+                <p>
+                    以上の手順で、次回以降のシステム起動時から指定したデバイスが自動的にマウントされるようになる。
+                </p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>
