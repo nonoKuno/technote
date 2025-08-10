@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>Ubuntuでテキストファイルを連結する方法 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Ubuntuでテキストファイルを連結する方法 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/linuxcat.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>Ubuntuでテキストファイルを連結する方法</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Ubuntuで2つのファイルを連結する方法</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年8月9日</span>
+                    <span>読了時間: 約4分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Linux</span>
+                    <span class="tag">CLI</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>
+                    Ubuntuや他のLinux環境で2つ以上のテキストファイルを1つにまとめるには、<code>cat</code>コマンドを使うのが最も簡単で基本的な方法である。<code>cat</code>は "concatenate"（連結する）の略であり、ファイルの連結や内容の表示に広く使われるコマンドだ。
+                </p>
+
+                <h2>1. ターミナルに内容を表示する</h2>
+                <p>
+                    最も基本的な使い方は、複数のファイルの内容を順番にターミナル画面（標準出力）に表示することである。これにより、元のファイルには変更を加えず内容を確認できる。
+                </p>
+                <pre><code>cat file1.txt file2.txt</code></pre>
+                <blockquote>
+                    このコマンドは、<code>file1.txt</code>の内容を表示した直後に<code>file2.txt</code>の内容を表示する。
+                </blockquote>
+
+                <h2>2. 新しいファイルに結合する (&gt;)</h2>
+                <p>
+                    連結した結果を新しいファイルとして保存したい場合は、リダイレクション演算子<code>&gt;</code>を使う。
+                </p>
+                <pre><code>cat file1.txt file2.txt > new_file.txt</code></pre>
+                <blockquote>
+                    <strong>注意：</strong> <code>new_file.txt</code>が既に存在する場合、ファイルの中身は上書きされるため注意が必要である。
+                </blockquote>
+
+                <h2>3. 既存のファイルに追記する (&gt;&gt;)</h2>
+                <p>
+                    既存のファイルの末尾に別のファイルの内容を追加（追記）するには、リダイレクション演算子<code>&gt;&gt;</code>を使う。
+                </p>
+                <pre><code>cat file2.txt >> file1.txt</code></pre>
+                <blockquote>
+                    この操作により、<code>file1.txt</code>の元の内容は消えず、その末尾に<code>file2.txt</code>の内容が追加される。
+                </blockquote>
+
+                <h2>まとめ（コマンド早見表）</h2>
+                <p>
+                    目的別の<code>cat</code>コマンドの利用方法を以下にまとめる。
+                </p>
+                <ul>
+                    <li><strong>画面表示:</strong> <code>cat file1.txt file2.txt</code><br>2つのファイルの内容をターミナルに連続して表示する。</li>
+                    <li><strong>新規保存:</strong> <code>cat file1.txt file2.txt > combined.txt</code><br><code>combined.txt</code>という新しいファイルに結果を保存する。</li>
+                    <li><strong>追記保存:</strong> <code>cat extra.txt >> original.txt</code><br><code>original.txt</code>の末尾に<code>extra.txt</code>の内容を追記する。</li>
+                </ul>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

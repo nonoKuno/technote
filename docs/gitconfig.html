@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>git config 技術者向けガイド | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>git config 技術者向けガイド</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">git config 完全ガイド</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年7月23日</span>
+                    <span>読了時間: 約5分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Git</span>
+                    <span class="tag">CLI</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>Gitの動作は、`git config`コマンドを通じて制御される設定ファイルによって定義される。本稿では、この`git config`のスコープ、確認方法、編集方法を技術者向けに詳説する。</p>
+
+                <h2>1. git configの3つのスコープ</h2>
+                <p>Gitの設定は、3つの異なるレベル（スコープ）で管理される。設定が競合した場合、より限定的なスコープが優先される（local > global > system）。</p>
+                
+                <h3>ローカル (local)</h3>
+                <ul>
+                    <li><strong>優先度:</strong> 1 (最高)</li>
+                    <li><strong>影響範囲:</strong> そのリポジトリのみ</li>
+                    <li><strong>設定ファイルのパス:</strong> <code>.git/config</code></li>
+                </ul>
+
+                <h3>グローバル (global)</h3>
+                <ul>
+                    <li><strong>優先度:</strong> 2</li>
+                    <li><strong>影響範囲:</strong> 現在のログインユーザーの全リポジトリ</li>
+                    <li><strong>設定ファイルのパス:</strong> <code>~/.gitconfig</code> または <code>~/.config/git/config</code></li>
+                </ul>
+
+                <h3>システム (system)</h3>
+                <ul>
+                    <li><strong>優先度:</strong> 3 (最低)</li>
+                    <li><strong>影響範囲:</strong> システムの全ユーザーと全リポジトリ</li>
+                    <li><strong>設定ファイルのパス:</strong> <code>/etc/gitconfig</code> (OSにより異なる)</li>
+                </ul>
+
+                <h2>2. 設定内容の確認</h2>
+                <p>現在の設定値を確認する方法は複数存在する。</p>
+
+                <h3>2.1. 全設定のリスト表示</h3>
+                <p>適用されている全ての設定を一覧表示するには、`--list`オプションを使用する。</p>
+                <pre><code>git config --list</code></pre>
+                
+                <p>各設定がどのファイルから読み込まれているかを確認するには、`--show-origin`を追加するとよい。</p>
+                <pre><code>git config --list --show-origin</code></pre>
+
+                <h3>2.2. 特定キーの取得</h3>
+                <p>特定のキーに対する値を取得するには、キー名を直接指定する。これは内部的に`--get`を実行しているのと同じである。</p>
+                <pre><code># ユーザー名を確認
+git config user.name
+
+# メールアドレスを確認
+git config user.email</code></pre>
+
+                <h2>3. 設定内容の編集</h2>
+                <p>設定の編集は、コマンドラインから直接行う方法と、設定ファイルを手動で編集する方法がある。</p>
+
+                <h3>3.1. コマンドによる直接編集</h3>
+                <p>最も一般的な方法である。`--global`や`--local`といったスコープオプションを付けて実行する。オプションを省略した場合は`--local`が適用される。</p>
+                <pre><code># グローバルにユーザー名を設定
+git config --global user.name "Your Name"
+
+# このリポジトリのみメールアドレスを設定
+git config --local user.email "project-specific@example.com"</code></pre>
+
+                <p>設定を削除する場合は`--unset`を使用する。</p>
+                 <pre><code># グローバルのエイリアス設定を削除
+git config --global --unset alias.st</code></pre>
+
+                <h3>3.2. 設定ファイルの手動編集</h3>
+                <p>`--edit`オプションを使用すると、環境変数 `EDITOR` で指定されたエディタで設定ファイルを開くことができる。複数の設定を一度に編集する場合に効率的である。</p>
+                <pre><code># グローバル設定ファイルを開く
+git config --global --edit
+
+# ローカル設定ファイルを開く
+git config --edit</code></pre>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

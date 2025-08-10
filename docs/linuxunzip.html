@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>UbuntuにおけるZIPファイルの解凍方法 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "UbuntuにおけるZIPファイルの解凍方法 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/unzip.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>UbuntuにおけるZIPファイルの解凍方法</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">UbuntuにおけるZIPファイルの解凍方法</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年8月9日</span>
+                    <span>読了時間: 約3分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Linux</span>
+                    <span class="tag">CLI</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>
+                    本稿は、Ubuntuオペレーティングシステムにおいて、<code>unzip</code>コマンドを利用してZIP形式のアーカイブファイルを解凍する手順を解説するものである。特に、ファイルの展開先ディレクトリを指定する方法についても詳述する。
+                </p>
+
+                <h2>1. 基本的な解凍方法</h2>
+                <p>
+                    最も基本的な使用法は、ZIPファイルが格納されているディレクトリでコマンドを実行することである。これにより、アーカイブ内の全ファイルが現在のディレクトリに展開される。
+                </p>
+                <h3>コマンド構文:</h3>
+                <pre><code>unzip [ファイル名.zip]</code></pre>
+                <h3>実行例:</h3>
+                <p><code>archive.zip</code>というファイルを解凍する場合の例である。</p>
+                <pre><code>unzip archive.zip</code></pre>
+
+                <h2>2. 展開先ディレクトリを指定して解凍する方法</h2>
+                <p>
+                    ファイルの展開先として特定のディレクトリを指定するには、<code>-d</code>オプションを使用する。これは「destination」を意味する。指定したパスのディレクトリが存在しない場合、<code>unzip</code>コマンドは自動的にそのディレクトリを生成する。
+                </p>
+                <h3>コマンド構文:</h3>
+                <pre><code>unzip [ファイル名.zip] -d [解凍先のパス]</code></pre>
+                <h3>実行例:</h3>
+                <p>
+                    <code>archive.zip</code>を<code>/home/user/documents/extracted_files</code>というディレクトリに解凍する場合の例である。
+                </p>
+                <pre><code>unzip archive.zip -d /home/user/documents/extracted_files</code></pre>
+                
+                <h2>3. コマンドの要約</h2>
+                <ul>
+                    <li><strong>現在の場所に解凍:</strong> <code>unzip [ファイル名.zip]</code></li>
+                    <li><strong>指定場所に解凍:</strong> <code>unzip [ファイル名.zip] -d [解凍先のパス]</code></li>
+                </ul>
+
+                <h2>備考: `unzip`コマンドが利用できない場合</h2>
+                <blockquote>
+                    通常、<code>unzip</code>コマンドはUbuntuに標準でインストールされている。しかし、最小構成の環境などで万が一コマンドが見つからない場合は、以下のコマンドを実行してインストールする必要がある。
+                    <pre><code>sudo apt update
+sudo apt install unzip</code></pre>
+                </blockquote>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

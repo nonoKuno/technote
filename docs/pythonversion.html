@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>PyTorchのバージョン確認とアップグレード方法 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "PyTorchのバージョン確認とアップグレード方法 | nonoKuno - TechNote",
+      "url": "YOUR_PAGE_URL"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>PyTorchのバージョン確認とアップグレード方法</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">PyTorchのバージョン確認とアップグレード方法</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年7月27日</span>
+                    <span>読了時間: 約6分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Python</span>
+                    <span class="tag">PyTorch</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>PyTorchのバージョン確認とアップグレードを、簡単なコマンドで実行する方法について解説する。</p>
+
+                <h2>バージョン確認方法</h2>
+                <p>使用する環境に合わせて、以下のいずれかの方法でバージョンを確認できる。</p>
+
+                <h3>1. Pythonスクリプト/インタラクティブシェルで確認</h3>
+                <p>Pythonのコード内で確認する最も一般的な方法である。実行するとバージョン番号が表示される。</p>
+                <pre><code>import torch
+print(torch.__version__)</code></pre>
+                <blockquote>
+                    <p><b>出力例:</b> <code>2.3.1+cu121</code></p>
+                    <p><code>+cu121</code> の部分は、対応するCUDAのバージョンを示す（CPU版の場合は表示されない）。</p>
+                </blockquote>
+
+                <h3>2. コマンドラインで確認</h3>
+                <p>ターミナルやコマンドプロンプトで直接確認することも可能である。</p>
+                
+                <h4>pipを使用している場合:</h4>
+                <pre><code>pip show torch</code></pre>
+
+                <h4>condaを使用している場合:</h4>
+                <pre><code>conda list torch</code></pre>
+
+                <h2>アップグレード方法</h2>
+                <blockquote>
+                    <p><b>重要:</b> 特にGPU版（CUDA）を使用する場合、PyTorch公式サイトで自身の環境に合ったインストールコマンドを取得して実行するのが最も確実である。</p>
+                    <p><a href="https://pytorch.org/get-started/locally/" target="_blank" rel="noopener noreferrer">PyTorch公式サイトへ</a></p>
+                </blockquote>
+
+                <h3>1. pipを使用している場合</h3>
+                <p>公式サイトで生成されたコマンドを実行するのが最も安全である。依存関係の競合を避けるため、一度アンインストールしてからの再インストールを推奨する。</p>
+                <pre><code># 古いバージョンをアンインストール (推奨)
+pip uninstall torch torchvision torchaudio
+
+# 公式サイトで取得したコマンドでインストール (これはCUDA 12.1の例)
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121</code></pre>
+
+                <h3>2. condaを使用している場合</h3>
+                <p>pipと同様に、公式サイトで生成されたコマンドを実行する。</p>
+                <pre><code># 公式サイトで取得したコマンドを実行 (これは一例)
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia</code></pre>
+                <blockquote>
+                    <p><b>注意:</b> コマンド内のバージョン番号 (<code>pytorch-cuda=12.1</code>など) は使用する環境によって異なる。必ず公式サイトで最新のコマンドを確認すること。</p>
+                </blockquote>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

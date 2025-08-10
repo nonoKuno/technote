@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>Dockerfileにおける環境変数の設定方法 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Dockerfileにおける環境変数の設定方法 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/dockerfileenv.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>Dockerfileにおける環境変数の設定方法</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Dockerfileにおける環境変数の設定方法</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年8月9日</span>
+                    <span>読了時間: 約6分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Docker</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>
+                    Dockerfileで環境変数を設定する主要な方法と、それぞれのユースケースについて簡潔に解説する。
+                </p>
+
+                <h2>1. ENV命令</h2>
+                <p>
+                    <code>ENV</code>命令は、Dockerfile内で環境変数を定義する最も基本的な方法である。ここで設定された変数は、後続の命令（<code>RUN</code>, <code>CMD</code>など）や、コンテナ実行時に参照可能となる。キーと値をスペースで区切る形式と、<code>=</code>で結合する形式があるが、後者は複数の変数を一度に定義でき、可読性が高いため推奨される。
+                </p>
+                <pre><code># 形式1: ENV &lt;キー&gt; &lt;値&gt;
+ENV APP_VERSION 1.0.0
+
+# 形式2: ENV &lt;キー&gt;=&lt;値&gt; ... (推奨)
+ENV DB_HOST="db.example.com" \
+    DB_PORT=5432 \
+    API_ENDPOINT="/api/v1"</code></pre>
+
+                <h2>2. ARGとENVの組み合わせ</h2>
+                <p>
+                    <code>ARG</code>でビルド時に外部から値を受け取り、それを<code>ENV</code>に設定する。これにより、ビルド環境に応じてコンテナの環境変数を動的に変更できる。
+                </p>
+                <pre><code># Dockerfile
+FROM node:18-alpine
+
+# ビルド引数を定義（デフォルト値: development）
+ARG NODE_ENV=development
+
+# ARGの値をENVに設定
+ENV NODE_ENV=${NODE_ENV}
+
+# ... 以降のビルドプロセス ...</code></pre>
+                <p>ビルドコマンドで値を指定する。</p>
+                <pre><code># 本番用にビルドする場合
+docker build --build-arg NODE_ENV=production -t my-app:prod .</code></pre>
+
+                <h2>3. 実行時の環境変数設定（推奨）</h2>
+                <p>
+                    パスワードやAPIキーなどの機密情報は、Dockerfileに直接記述すべきではない。イメージ履歴に残存し、漏洩リスクとなるためである。これらの情報はコンテナ実行時に外部から注入することがベストプラクティスである。
+                </p>
+                <h3>docker run</h3>
+                <p><code>-e</code>オプションや<code>--env-file</code>オプションを使用する。</p>
+                <pre><code># -e オプションで個別に指定
+docker run -e "DB_PASSWORD=my_secret_password" my-app
+
+# --env-file オプションでファイルから一括読み込み
+docker run --env-file ./prod.env my-app</code></pre>
+
+                <h3>Docker Compose</h3>
+                <p><code>docker-compose.yml</code>内の<code>environment</code>キーや<code>env_file</code>キーで管理する。</p>
+                <pre><code># docker-compose.yml
+version: '3.8'
+services:
+  app:
+    image: my-app
+    environment:
+      - DB_USER=admin
+      - DB_PASSWORD=${DB_PASS_FROM_HOST} # ホストの環境変数を参照
+    env_file:
+      - ./common.env</code></pre>
+
+                <h2>注意点: 機密情報の扱い</h2>
+                <blockquote>
+                    <strong>警告:</strong> <code>ENV</code>命令でパスワードやAPIキーを直接Dockerfileに記述してはならない。<code>docker history</code>コマンドでイメージレイヤーを調査すれば、値が容易に確認できてしまうため、重大なセキュリティリスクとなる。
+                </blockquote>
+
+                <h2>まとめ</h2>
+                <ul>
+                    <li><strong><code>ENV</code>:</strong> アプリケーションのデフォルト設定、非機密情報に利用する。Dockerfile内で完結し可読性が高いが、機密情報の記述は厳禁である。</li>
+                    <li><strong><code>ARG</code> + <code>ENV</code>:</strong> ビルド環境に応じた設定の切り替えに利用する。ビルドの柔軟性が向上するが、ビルド引数で渡した値もイメージ履歴に残る可能性があるため、機密情報には不向きである。</li>
+                    <li><strong>実行時注入 (<code>docker run</code>, Compose):</strong> 機密情報（パスワード、APIキー）、環境ごとの設定に利用する。最も安全で推奨される方法であり、Dockerfileを変更せずに設定を上書きできる。</li>
+                </ul>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>
