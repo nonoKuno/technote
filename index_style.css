@@ -1,0 +1,219 @@
+/* index.html固有のスタイル */
+.container {
+    max-width: 1000px;
+}
+
+/* サイトタイトルのスタイル */
+.header {
+    padding: 60px 0;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 300;
+}
+
+.header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* ナビゲーションヘッダーのスタイル */
+.main-header {
+    background: #2c3e50;
+    padding: 10px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap; 
+}
+
+.header-nav a {
+    text-decoration: none;
+    color: #ecf0f1;
+    font-size: 1em;
+    padding: 10px 15px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.header-nav a:hover {
+    background-color: #34495e;
+}
+
+/* メインコンテンツエリアのスタイル */
+.main-content {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 1.8em;
+    color: #2c3e50;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+/* カテゴリ関連のスタイル */
+.category-section {
+    margin-bottom: 50px;
+}
+
+.category-section details > summary {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: #34495e;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ecf0f1;
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+    padding-left: 28px;
+    transition: margin-bottom 0.2s ease;
+}
+
+.category-section details > summary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    border-bottom: 2px solid #34495e;
+    border-right: 2px solid #34495e;
+    transition: transform 0.2s ease;
+}
+
+.category-section details[open] > summary {
+    margin-bottom: 25px;
+    border-bottom: 2px solid #34495e;
+}
+
+.category-section details[open] > summary::before {
+    transform: translateY(-70%) rotate(225deg);
+}
+
+/* 記事カードのグリッドスタイル */
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.article-card {
+    background: #fafbfc;
+    border: 1px solid #e1e8ed;
+    padding: 25px;
+    border-radius: 6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.article-title {
+    font-size: 1.3em;
+    color: #2c3e50;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.article-summary {
+    color: #5a6c7d;
+    margin-bottom: 15px;
+    font-size: 0.95em;
+}
+
+.article-meta {
+    color: #95a5a6;
+    font-size: 0.85em;
+    margin-bottom: 20px;
+}
+
+.read-more-btn {
+    background: #34495e;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s ease;
+}
+
+.read-more-btn:hover {
+    background: #2c3e50;
+}
+
+/* ブログ概要セクション */
+.about-section {
+    background: #ecf0f1;
+    padding: 30px;
+    border-radius: 6px;
+    margin-bottom: 30px;
+}
+
+.about-section h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+}
+
+.about-section p {
+    color: #5a6c7d;
+}
+
+/* フッター */
+.footer {
+    border-top: 1px solid #e1e8ed;
+    margin-top: 40px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .header {
+        padding: 40px 0;
+    }
+    
+    .header h1 {
+        font-size: 2em;
+    }
+    
+    .main-content {
+        padding: 20px;
+    }
+    
+    .articles-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ナビゲーションのリンク先がヘッダーに隠れるのを防ぐ */
+#latest-articles,
+.category-section {
+    scroll-margin-top: 100px;
+}

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>ダイクストラ法を超えた！？ BMSSP解説 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "ダイクストラ法を超えた！？ BMSSP解説 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/BMSSP.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>BMSSP解説</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">ダイクストラ法を超えた！？ BMSSP解説</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年8月11日</span>
+                    <span>読了時間: 約7分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">AI</span>
+                    <span class="tag">技術解説</span>
+                    <span class="tag">アルゴリズム</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>本記事では、論文 "Breaking the Sorting Barrier for Directed Single-Source Shortest Paths" で提案された、実数非負重み付き有向グラフにおける単一始点最短経路問題（SSSP）の画期的なアルゴリズムについて、その技術的要点を解説する。</p>
+
+                <h2>論文要約</h2>
+                <p>本論文は、実数非負重み付き有向グラフにおける単一始点最短経路問題（SSSP）に対し、決定的な<i>O</i>(<i>m</i> log<sup>2/3</sup><i>n</i>)時間アルゴリズムを提案する。これは、Fibonacciヒープ等を用いたダイクストラ法の<i>O</i>(<i>m</i> + <i>n</i> log <i>n</i>)という「ソーティング障壁」を、疎なグラフにおいて初めて決定的に破る成果である。</p>
+
+                <h2>中核概念：階層的探索とピボット選択</h2>
+                <blockquote>
+                <p>このアルゴリズムは、ダイクストラ法の「コスト優先の原則」と、ベルマン・フォード法的な「一斉緩和」の考え方を統合した、分割統治に基づいた階層的な探索戦略をとる。</p>
+                <p>全体のノードを一度にソートするのではなく、探索のフロンティアから<strong>「ピボット」</strong>と呼ばれる有望な中継点を効率的に特定し、そこへ探索をジャンプさせることで計算量を削減する。これにより、グローバルなソート処理を回避する。</p>
+                </blockquote>
+
+                <h2>技術的詳細：主要コンポーネント</h2>
+                
+                <h3><code>FINDPIVOTS</code> 手続き：ピボットの特定</h3>
+                <p>アルゴリズムの最も独創的な部分。フロンティアノード群の中から、計算コストを投下する価値のある「ピボット」を特定する。</p>
+                <blockquote>
+                    <h4><code>FINDPIVOTS</code> の厳密な処理フロー</h4>
+                    <p><strong>目的:</strong> フロンティアノード <i>u</i> の先に、どれだけ大きな未探索領域が広がっているかを高速に概算する。</p>
+                    <p><strong>処理内容:</strong></p>
+                    <ol>
+                        <li>フロンティアノード <i>u</i> を一つ選択し、始点とする。</li>
+                        <li><i>u</i> を起点として、<strong><i>k</i>ラウンド限定の集団緩和</strong>を実行する。
+                            <ul>
+                                <li>これは「<i>k</i>ステップ限定のダイクストラ法」あるいは「<i>k</i>ラウンド限定のベルマン・フォード法」と解釈できる。</li>
+                                <li>優先度付きキューから<i>k</i>回ノードを取り出し、隣接エッジを緩和する処理に相当する。</li>
+                            </ul>
+                        </li>
+                        <li><i>k</i>ラウンドの緩和後、<i>u</i> から到達可能になったノードの総数を数える。</li>
+                        <li>この総数が閾値 <i>k</i> を超えた場合、始点となったフロンティアノード <i>u</i> を<strong>ピボット</strong>として認定する。</li>
+                    </ol>
+                    <p><strong>注:</strong> この処理は最短経路を確定させるものではなく、あくまでグラフの局所的なトポロジー（構造）を調査するための「偵察」である。</p>
+                </blockquote>
+
+                <h3><code>BMSSP</code> 手続き：メインループと探索順の決定</h3>
+                <p>アルゴリズム全体の流れを制御する再帰的なメインループ。探索の順番は、単純なコスト順ではなく、より動的な優先度システムによって決定される。</p>
+                <blockquote>
+                    <h4><code>BMSSP</code> における探索順の決定フロー</h4>
+                    <p>アルゴリズムは「次に探索すべき頂点」を管理するデータ構造 <i>D</i> を持つ。<code>BMSSP(<i>S</i>)</code> が呼び出された際の処理フローは以下の通り。</p>
+                    <ol>
+                        <li><strong>前処理 (Filtering):</strong><br>
+                            まず <i>P</i> = <code>FINDPIVOTS(<i>S</i>)</code> を実行。引数 <i>S</i> を、より小さいピボット集合 <i>P</i> にフィルタリングする。</li>
+                        <li><strong>初期化 (Initialization):</strong><br>
+                            フィルタリング後のピボット集合 <i>P</i> のみをデータ構造 <i>D</i> に格納する。</li>
+                        <li><strong>メインループ (Main Loop):</strong><br>
+                            <i>D</i> が空になるまで以下のサイクルを繰り返す。
+                            <ol>
+                                <li><strong>PULL:</strong> <i>D</i> から、グローバルに最もコストが低いピボットのグループ <i>S<sub>i</sub></i> と、そのコストの下限 <i>B<sub>i</sub></i> を取り出す。</li>
+                                <li><strong>RECURSE:</strong> 取り出した <i>S<sub>i</sub></i> を対象として、<code>BMSSP(<i>S<sub>i</sub></i>, <i>B<sub>i</sub></i>)</code> を再帰的に呼び出す。この呼び出しは、探索の進捗を示す新しいコスト下限 <i>B'<sub>i</sub></i> を返す。</li>
+                                <li><strong>UPDATE:</strong> 再帰呼び出しの結果を <i>D</i> に反映させる。新たに判明したコスト <i>d</i> を持つ頂点は、以下のルールで挿入される。
+                                    <ul>
+                                        <li><strong><code>BATCH PREPEND</code> (高速レーン):</strong> コスト <i>d</i> が <i>d</i> &isin; [<i>B'<sub>i</sub></i>, <i>B<sub>i</sub></i>) の範囲にある場合。これは「最新の探索で達成された進捗範囲内」を意味し、最優先で処理するため <i>D</i> の先頭に割り込み挿入される。</li>
+                                        <li><strong><code>INSERT</code> (通常レーン):</strong> コスト <i>d</i> が <i>d</i> &ge; <i>B<sub>i</sub></i> の場合。これは通常のコスト順で <i>D</i> に挿入される。</li>
+                                    </ul>
+                                </li>
+                            </ol>
+                        </li>
+                    </ol>
+                </blockquote>
+
+                <h2>ダイクストラ法との比較と結論</h2>
+                <h3>探索戦略の比較</h3>
+                <ul>
+                    <li><strong>ダイクストラ法:</strong> グローバルなコスト最小ノードを1つずつ確定させる、均一な探索。</li>
+                    <li><strong>本手法:</strong> グローバルなコスト優先を維持しつつ、局所的なグラフ構造（ピボット）を利用して探索を加速させる、階層的・動的な探索。</li>
+                </ul>
+
+                <h3>性能に関する考察</h3>
+                <p>理論上の最悪計算量では本手法が優れる。しかし、<code>FINDPIVOTS</code> やデータ構造の管理に伴うオーバーヘッドが存在するため、グラフサイズが小さい、あるいは構造が単純な実用的なケースでは、シンプルで定数倍の軽いダイクストラ法の方が高速な場合もあり得る。本手法の真価は、巨大で複雑なグラフにおいて発揮される。</p>
+
+                <h2>原著論文</h2>
+                <p>本記事で解説した論文は、以下のリンクから閲覧できる。</p>
+                <p><a href="https://arxiv.org/abs/2504.17033v2" target="_blank" rel="noopener noreferrer">Duan, R., et al. (2025). Breaking the Sorting Barrier for Directed Single-Source Shortest Paths.</a></p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

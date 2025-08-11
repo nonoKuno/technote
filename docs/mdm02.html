@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>マスク化拡散モデル解説 連載 第2回：マスキングパラダイム | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "マスク化拡散モデル解説 連載 第2回：マスキングパラダイム | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/mdm02.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>マスク化拡散モデル解説 第2回</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">マスク化拡散モデル解説</h1>
+                <h1 class="article-title">第2回：マスキングパラダイム</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年8月11日</span>
+                    <span>読了時間: 約6分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">AI</span>
+                    <span class="tag">技術解説</span>
+                    <span class="tag">マスク化拡散モデル</span>
+                    <span class="tag">連載</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <h2>前回の振り返り</h2>
+                <p>
+                    <a href="mdm04.html">前回の記事</a>では、マスク化拡散モデル（MDM）を支える一つ目の柱である「拡散パラダイム」について解説した。具体的には、Denoising Diffusion Probabilistic Models (DDPM) が、データにノイズを付加する順方向プロセスと、ノイズからデータを復元する逆方向プロセスによって高品質な生成を実現する仕組みを説明した。また、このプロセスが確率微分方程式（SDE）によって統一的に記述できることにも触れた。
+                </p>
+                <p>
+                    本稿では、MDMのもう一つの重要な柱である「マスキングパラダイム」に焦点を当てる。このパラダイムは、特に自然言語処理の分野で大きなブレークスルーをもたらしたBERTによって確立されたものである。
+                </p>
+
+                <h2>第2章 マスキングパラダイム：双方向コンテキストの獲得</h2>
+
+                <h3>2.1. BERTとマスク化言語モデル (MLM)</h3>
+                <p>
+                    MDMのもう一つの基礎となるのは、Devlinら (2018) の論文「BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding」で提案されたマスク化言語モデル（Masked Language Model, MLM）である。
+                </p>
+                <p>
+                    <strong>一方向性の制約:</strong> BERT以前の主要な言語モデル（例：GPT）は、一方向性（通常は左から右）であり、シーケンスの次の単語を予測するように訓練されていた。このアーキテクチャは強力であるものの、単語の左右両方の文脈を同時に深く考慮する能力には構造的な制約があった。多くの自然言語理解タスクでは、文全体の双方向的な文脈理解が不可欠である。
+                </p>
+                <p>
+                    <strong>MLM目的関数:</strong> BERTはこの制約を、MLMという事前学習タスクによって克服した。MLMは、次の単語を予測する代わりに、入力文の一部を隠し（マスクし）、モデルにその隠された単語を周囲の文脈全体（左と右の両方）から推測させる。
+                </p>
+                <blockquote>
+                    <strong>MLMの具体的なプロセス：</strong>
+                    <ol>
+                        <li>入力トークンシーケンスの中からランダムに15%のトークンを選択する。</li>
+                        <li>選択されたトークンに対し、以下の処理を行う：
+                            <ul>
+                                <li>80%の確率で、特別な<code>[MASK]</code>トークンに置き換える。</li>
+                                <li>10%の確率で、語彙内のランダムな別のトークンに置き換える。</li>
+                                <li>10%の確率で、元のトークンのまま変更しない。</li>
+                            </ul>
+                        </li>
+                        <li>モデルは、この「破損」した入力シーケンスから、マスクされた位置の元のトークンを予測するように訓練される。</li>
+                    </ol>
+                </blockquote>
+                <p>
+                    この置き換え戦略は、モデルが単に<code>[MASK]</code>トークンの位置を予測するだけでなく、入力表現そのものが正しいかどうかも含めて学習することを促し、より汎用性の高い文脈表現の獲得に寄与する。
+                </p>
+                <p>
+                    さらにBERTは、MLMと並行して「次文予測（Next Sentence Prediction, NSP）」というタスクでも事前学習される。これは、与えられた二つの文が原文において連続しているかどうかを判定する二値分類タスクであり、モデルが文と文の間の関係性を理解する能力を養うことを目的としている。
+                </p>
+                
+                <h3>2.2. デノイジング概念の統合</h3>
+                <p>
+                    MDMの核心的な着想は、DDPMにおける「デノイジング」（連続値であるピクセルからガウスノイズを除去する操作）と、BERTのMLMにおける「デノイジング」（離散値であるテキストから<code>[MASK]</code>トークンを復元する操作）が、本質的に同じ「破損からの復元」というタスクであると見なした点にある。MDMは、DDPMの<strong>反復的な生成プロセス</strong>と、BERTの<strong>離散データに対するデノイジング目的関数</strong>を直接的に統合したものである。
+                </p>
+                <p>
+                    両者のプロセスを比較すると、この関係はより明確になる。
+                </p>
+                <ul>
+                    <li><strong>DDPM:</strong> 連続空間におけるデノイジングステップであり、<i>p</i>(<i>x</i><sub><i>t</i>-1</sub> | <i>x<sub>t</sub></i>)を学習する。ノイズが付加されたデータ<i>x<sub>t</sub></i>から、よりノイズの少ないデータ<i>x</i><sub><i>t</i>-1</sub>を予測する。</li>
+                    <li><strong>BERT (MLM):</strong> 離散空間におけるデノイジングステップであり、<i>p</i>(masked_token | unmasked_context)を学習する。一部がマスクされた「破損」シーケンスから、元の「クリーンな」トークンを予測する。</li>
+                    <li><strong>MDM:</strong> BERTのマスキング操作を、DDPMのような反復的なプロセスとして適用する。順方向プロセスは段階的なマスキングと見なせ、逆方向プロセスは反復的なアンマスキング（MLMタスクの遂行）となる。</li>
+                </ul>
+                <p>
+                    したがって、MDMのフレームワークは、これら二つのパラダイムから単に影響を受けただけでなく、一方のプロセスと他方の目的関数を直接的に組み合わせたものと理解できる。この点が、MDMが自然かつ強力なモデルである理由を説明する鍵となる。
+                </p>
+                
+                <hr style="margin: 40px 0;">
+                <p>
+                    本稿では、マスク化拡散モデル（MDM）の基礎となる二つ目の柱、マスク化言語モデルについて解説した。ここまでで、MDMを支える「拡散」と「マスキング」という二つの概念が出揃った。<a href="mdm03.html">次回の記事</a>では、これら二つのアイデアがどのように融合して現代のMDMフレームワークが形成され、その後の理論的な単純化が性能向上にどう繋がったかを探求する。
+                </p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

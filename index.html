@@ -6,6 +6,7 @@
     <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
     <title>TechNote - nonoKuno 技術系ブログ</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="index_style.css">
     <link rel="icon" href="favicon.ico">
     <script type="application/ld+json">
     {
@@ -15,157 +16,55 @@
       "url": "https://nonokuno.github.io/technote/"
     }
     </script>
-    <style>
-        /* index.html固有のスタイル */
-        .container {
-            max-width: 1000px;
-        }
-
-        .header {
-            padding: 60px 0;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 300;
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .main-content {
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-        }
-
-        .section-title {
-            font-size: 1.8em;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ecf0f1;
-        }
-
-        .articles-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .article-card {
-            background: #fafbfc;
-            border: 1px solid #e1e8ed;
-            padding: 25px;
-            border-radius: 6px;
-            transition: transform 0.2s ease;
-        }
-
-        .article-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .article-title {
-            font-size: 1.3em;
-            color: #2c3e50;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .article-summary {
-            color: #5a6c7d;
-            margin-bottom: 15px;
-            font-size: 0.95em;
-        }
-
-        .article-meta {
-            color: #95a5a6;
-            font-size: 0.85em;
-            margin-bottom: 20px;
-        }
-
-        .read-more-btn {
-            background: #34495e;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9em;
-            text-decoration: none;
-            display: inline-block;
-            transition: background 0.2s ease;
-        }
-
-        .read-more-btn:hover {
-            background: #2c3e50;
-        }
-
-        .about-section {
-            background: #ecf0f1;
-            padding: 30px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-        }
-
-        .about-section h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 1.4em;
-        }
-
-        .about-section p {
-            color: #5a6c7d;
-        }
-
-        .footer {
-            border-top: 1px solid #e1e8ed;
-            margin-top: 40px;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 20px;
-            }
-            
-            .header {
-                padding: 40px 0;
-            }
-            
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .articles-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
 <body>
-    <header class="header">
+    <div class="header">
         <div class="container">
             <h1>nonoKuno TechNote</h1>
             <p>技術者の nonoKuno が気になって調べた内容を</p>
             <p>備忘録的にまとめていくブログです</p>
         </div>
+    </div>
+
+    <header class="main-header">
+        <div class="container">
+            <nav class="header-nav">
+                <ul>
+                    <li><a href="#latest-articles">最新記事</a></li>
+                    <li><a href="#category-ai">AI 論文解説</a></li>
+                    <li><a href="#category-git">Git</a></li>
+                    <li><a href="#category-linux">Linux</a></li>
+                    <li><a href="#category-docker">Docker</a></li>
+                    <li><a href="#category-python">Python</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
     <main class="container">
         <div class="main-content">
-            <h2 class="section-title">最新記事</h2>
-            
+            <h2 class="section-title" id="latest-articles">最新記事</h2>
             <div class="articles-grid">
+                <article class="article-card">
+                    <h3 class="article-title">ダイクストラ法を超えた！？ BMSSP解説</h3>
+                    <p class="article-summary">SSSPの画期的なアルゴリズムについて</p>
+                    <div class="article-meta">2025年8月11日 | AI, 技術解説, アルゴリズム</div>
+                    <a href="https://nonokuno.github.io/technote/docs/BMSSP.html" class="read-more-btn">記事を読む</a>
+                </article>
+
+                <article class="article-card">
+                    <h3 class="article-title">論文解説『Train for the Worst, Plan for the Best: Understanding Token Ordering in Masked Diffusions』</h3>
+                    <p class="article-summary">ICML2025</p>
+                    <div class="article-meta">2025年8月11日 | AI, 論文解説, ICML</div>
+                    <a href="https://nonokuno.github.io/technote/docs/JaeyeonKim2025.html" class="read-more-btn">記事を読む</a>
+                </article>
+
+                <article class="article-card">
+                    <h3 class="article-title">マスク化拡散モデル解説 連載 第1回：拡散パラダイム</h3>
+                    <p class="article-summary">マスク化拡散モデル解説</p>
+                    <div class="article-meta">2025年8月11日 | AI, 技術解説, マスク化拡散モデル, 連載</div>
+                    <a href="https://nonokuno.github.io/technote/docs/mdm01.html" class="read-more-btn">記事を読む</a>
+                </article>
 
                 <article class="article-card">
                     <h3 class="article-title">論文解説『TokenVerse: Versatile Multi-concept Personalization in Token Modulation Space』</h3>
@@ -180,135 +79,166 @@
                     <div class="article-meta">2025年8月9日 | AI, 論文解説, SIGGRAPH</div>
                     <a href="https://nonokuno.github.io/technote/docs/KaixinYao2025.html" class="read-more-btn">記事を読む</a>
                 </article>
-
-                <article class="article-card">
-                    <h3 class="article-title">論文解説『Molmo and PixMo: Open Weights and Open Data for State-of-the-Art Vision-Language Models』</h3>
-                    <p class="article-summary">CVPR2025</p>
-                    <div class="article-meta">2025年8月9日 | AI, 論文解説, CVPR</div>
-                    <a href="https://nonokuno.github.io/technote/docs/Deitke2025.html" class="read-more-btn">記事を読む</a>
-                </article>
-
-                <article class="article-card">
-                    <h3 class="article-title">論文解説『VGGT: Visual Geometry Grounded Transformer』</h3>
-                    <p class="article-summary">CVPR2025</p>
-                    <div class="article-meta">2025年8月9日 | AI, 論文解説, CVPR</div>
-                    <a href="https://nonokuno.github.io/technote/docs/JianyuanWang2025.html" class="read-more-btn">記事を読む</a>
-                </article>
-
-                <article class="article-card">
-                    <h3 class="article-title">論文解説『Generative Multimodal Pretraining with Discrete Diffusion Timestep Tokens』</h3>
-                    <p class="article-summary">CVPR2025</p>
-                    <div class="article-meta">2025年8月9日 | AI, 論文解説, CVPR</div>
-                    <a href="https://nonokuno.github.io/technote/docs/KaihangPan2025.html" class="read-more-btn">記事を読む</a>
-                </article>
-
-                <article class="article-card">
-                    <h3 class="article-title">Dockerfileにおける環境変数の設定方法</h3>
-                    <p class="article-summary">Dockerfileで環境変数を設定する</p>
-                    <div class="article-meta">2025年8月9日 | Docker</div>
-                    <a href="https://nonokuno.github.io/technote/docs/dockerfileenv.html" class="read-more-btn">記事を読む</a>
-                </article>
-
-                <article class="article-card">
-                    <h3 class="article-title">Ubuntuでテキストファイルを連結する方法</h3>
-                    <p class="article-summary">2つのファイルを連結したいとき</p>
-                    <div class="article-meta">2025年8月9日 | Linux, CLI</div>
-                    <a href="https://nonokuno.github.io/technote/docs/linuxcat.html" class="read-more-btn">記事を読む</a>
-                </article>
-
-                <article class="article-card">
-                    <h3 class="article-title">UbuntuでSSD/HDDを自動マウントする設定</h3>
-                    <p class="article-summary">内蔵または外付けのSSDやHDDを起動時に自動マウントする</p>
-                    <div class="article-meta">2025年8月9日 | Linux, CLI</div>
-                    <a href="https://nonokuno.github.io/technote/docs/linuxfstab.html" class="read-more-btn">記事を読む</a>
-                </article>
-
-                <article class="article-card">
-                    <h3 class="article-title">UbuntuにおけるZIPファイルの解凍方法</h3>
-                    <p class="article-summary">ZIP形式のアーカイブファイルを解凍する手順</p>
-                    <div class="article-meta">2025年8月9日 | Linux, CLI</div>
-                    <a href="https://nonokuno.github.io/technote/docs/linuxunzip.html" class="read-more-btn">記事を読む</a>
-                </article>
             </div>
         </div>
 
         <div class="main-content">
             <h2 class="section-title">記事</h2>
             
-            <div class="articles-grid">
+            <section id="category-ai" class="category-section">
+                <details>
+                    <summary class="category-title">AI 論文解説</summary>
+                    <div class="articles-grid">
+                        <article class="article-card">
+                            <h3 class="article-title">論文解説『Molmo and PixMo: Open Weights and Open Data for State-of-the-Art Vision-Language Models』</h3>
+                            <p class="article-summary">CVPR2025</p>
+                            <div class="article-meta">2025年8月9日 | AI, 論文解説, CVPR</div>
+                            <a href="https://nonokuno.github.io/technote/docs/Deitke2025.html" class="read-more-btn">記事を読む</a>
+                        </article>
 
-                <article class="article-card">
-                    <h3 class="article-title">論文解説『Precise Event Spotting in Sports Videos: Solving Long-Range Dependency and Class Imbalance』</h3>
-                    <p class="article-summary">CVPR2025</p>
-                    <div class="article-meta">2025年7月27日 | AI, 論文解説, CVPR</div>
-                    <a href="https://nonokuno.github.io/technote/docs/Santra2025.html" class="read-more-btn">記事を読む</a>
-                </article>
+                        <article class="article-card">
+                            <h3 class="article-title">論文解説『VGGT: Visual Geometry Grounded Transformer』</h3>
+                            <p class="article-summary">CVPR2025</p>
+                            <div class="article-meta">2025年8月9日 | AI, 論文解説, CVPR</div>
+                            <a href="https://nonokuno.github.io/technote/docs/JianyuanWang2025.html" class="read-more-btn">記事を読む</a>
+                        </article>
 
-                <article class="article-card">
-                    <h3 class="article-title">論文解説『Towards Universal Soccer Video Understanding』</h3>
-                    <p class="article-summary">CVPR2025</p>
-                    <div class="article-meta">2025年7月27日 | AI, 論文解説, CVPR</div>
-                    <a href="https://nonokuno.github.io/technote/docs/JiayuanRao2025.html" class="read-more-btn">記事を読む</a>
-                </article>
+                        <article class="article-card">
+                            <h3 class="article-title">論文解説『Generative Multimodal Pretraining with Discrete Diffusion Timestep Tokens』</h3>
+                            <p class="article-summary">CVPR2025</p>
+                            <div class="article-meta">2025年8月9日 | AI, 論文解説, CVPR</div>
+                            <a href="https://nonokuno.github.io/technote/docs/KaihangPan2025.html" class="read-more-btn">記事を読む</a>
+                        </article>
 
-                <article class="article-card">
-                    <h3 class="article-title">git add の取り消し方</h3>
-                    <p class="article-summary">gitでステージングした変更を取り消す、代表的な2つの方法について</p>
-                    <div class="article-meta">2025年7月27日 | Git</div>
-                    <a href="https://nonokuno.github.io/technote/docs/gitrestore.html" class="read-more-btn">記事を読む</a>
-                </article>
+                        <article class="article-card">
+                            <h3 class="article-title">論文解説『Precise Event Spotting in Sports Videos: Solving Long-Range Dependency and Class Imbalance』</h3>
+                            <p class="article-summary">CVPR2025</p>
+                            <div class="article-meta">2025年7月27日 | AI, 論文解説, CVPR</div>
+                            <a href="https://nonokuno.github.io/technote/docs/Santra2025.html" class="read-more-btn">記事を読む</a>
+                        </article>
 
-                <article class="article-card">
-                    <h3 class="article-title">PyTorchのバージョン確認とアップグレード方法</h3>
-                    <p class="article-summary">PyTorchのバージョン確認とアップグレードを簡単なコマンドで実行する</p>
-                    <div class="article-meta">2025年7月27日 | Python, PyTorch</div>
-                    <a href="https://nonokuno.github.io/technote/docs/pythonversion.html" class="read-more-btn">記事を読む</a>
-                </article>
+                        <article class="article-card">
+                            <h3 class="article-title">論文解説『Towards Universal Soccer Video Understanding』</h3>
+                            <p class="article-summary">CVPR2025</p>
+                            <div class="article-meta">2025年7月27日 | AI, 論文解説, CVPR</div>
+                            <a href="https://nonokuno.github.io/technote/docs/JiayuanRao2025.html" class="read-more-btn">記事を読む</a>
+                        </article>
+                    </div>
+                </details>
+            </section>
 
-                <article class="article-card">
-                    <h3 class="article-title">git config 技術者向けガイド</h3>
-                    <p class="article-summary">git config のスコープ、確認方法、編集方法</p>
-                    <div class="article-meta">2025年7月23日 | Git, CLI</div>
-                    <a href="https://nonokuno.github.io/technote/docs/gitconfig.html" class="read-more-btn">記事を読む</a>
-                </article>
+            <section id="category-git" class="category-section">
+                <details>
+                    <summary class="category-title">Git</summary>
+                    <div class="articles-grid">
+                        <article class="article-card">
+                            <h3 class="article-title">git add の取り消し方</h3>
+                            <p class="article-summary">gitでステージングした変更を取り消す、代表的な2つの方法について</p>
+                            <div class="article-meta">2025年7月27日 | Git</div>
+                            <a href="https://nonokuno.github.io/technote/docs/gitrestore.html" class="read-more-btn">記事を読む</a>
+                        </article>
 
-                <article class="article-card">
-                    <h3 class="article-title">GitHubリモートURLへの認証情報埋め込み手順</h3>
-                    <p class="article-summary">https接続でもパスワードを毎回打たなくて良くなる方法</p>
-                    <div class="article-meta">2025年7月23日 | Git, GitHub</div>
-                    <a href="https://nonokuno.github.io/technote/docs/githubremotepassword.html" class="read-more-btn">記事を読む</a>
-                </article>
+                        <article class="article-card">
+                            <h3 class="article-title">git config 技術者向けガイド</h3>
+                            <p class="article-summary">git config のスコープ、確認方法、編集方法</p>
+                            <div class="article-meta">2025年7月23日 | Git, CLI</div>
+                            <a href="https://nonokuno.github.io/technote/docs/gitconfig.html" class="read-more-btn">記事を読む</a>
+                        </article>
 
-                <article class="article-card">
-                    <h3 class="article-title">Gitで履歴のない、まっさらなブランチを作成する方法</h3>
-                    <p class="article-summary">既存のコミット履歴を一切引き継がない、完全に独立したブランチを作成する</p>
-                    <div class="article-meta">2025年7月23日 | Git</div>
-                    <a href="https://nonokuno.github.io/technote/docs/gitcheckoutorphan.html" class="read-more-btn">記事を読む</a>
-                </article>
+                        <article class="article-card">
+                            <h3 class="article-title">GitHubリモートURLへの認証情報埋め込み手順</h3>
+                            <p class="article-summary">https接続でもパスワードを毎回打たなくて良くなる方法</p>
+                            <div class="article-meta">2025年7月23日 | Git, GitHub</div>
+                            <a href="https://nonokuno.github.io/technote/docs/githubremotepassword.html" class="read-more-btn">記事を読む</a>
+                        </article>
 
-                <article class="article-card">
-                    <h3 class="article-title">リモート追跡ブランチのクリーンアップ</h3>
-                    <p class="article-summary">リモートリポジトリで削除されたブランチが、ローカルに残り続ける問題を解決する</p>
-                    <div class="article-meta">2025年7月21日 | Git</div>
-                    <a href="https://nonokuno.github.io/technote/docs/gitfetchprune.html" class="read-more-btn">記事を読む</a>
-                </article>
+                        <article class="article-card">
+                            <h3 class="article-title">Gitで履歴のない、まっさらなブランチを作成する方法</h3>
+                            <p class="article-summary">既存のコミット履歴を一切引き継がない、完全に独立したブランチを作成する</p>
+                            <div class="article-meta">2025年7月23日 | Git</div>
+                            <a href="https://nonokuno.github.io/technote/docs/gitcheckoutorphan.html" class="read-more-btn">記事を読む</a>
+                        </article>
 
-                <article class="article-card">
-                    <h3 class="article-title">複数コミットを一つにまとめてマージする</h3>
-                    <p class="article-summary">mainブランチのコミット履歴が細かな作業履歴で汚れるのを防ぐ</p>
-                    <div class="article-meta">2025年7月21日 | Git</div>
-                    <a href="https://nonokuno.github.io/technote/docs/gitmergesquash.html" class="read-more-btn">記事を読む</a>
-                </article>
+                        <article class="article-card">
+                            <h3 class="article-title">リモート追跡ブランチのクリーンアップ</h3>
+                            <p class="article-summary">リモートリポジトリで削除されたブランチが、ローカルに残り続ける問題を解決する</p>
+                            <div class="article-meta">2025年7月21日 | Git</div>
+                            <a href="https://nonokuno.github.io/technote/docs/gitfetchprune.html" class="read-more-btn">記事を読む</a>
+                        </article>
 
-                <article class="article-card">
-                    <h3 class="article-title">ディレクトリごとにgitアカウントとSSHキーを自動で切り替える設定</h3>
-                    <p class="article-summary">リポジトリ/ディレクトリごとにコミット作者と認証情報を自動で切り替える</p>
-                    <div class="article-meta">2025年7月21日 | Git, CLI</div>
-                    <a href="https://nonokuno.github.io/technote/docs/switchgitaccounts.html" class="read-more-btn">記事を読む</a>
-                </article>
-            </div>
+                        <article class="article-card">
+                            <h3 class="article-title">複数コミットを一つにまとめてマージする</h3>
+                            <p class="article-summary">mainブランチのコミット履歴が細かな作業履歴で汚れるのを防ぐ</p>
+                            <div class="article-meta">2025年7月21日 | Git</div>
+                            <a href="https://nonokuno.github.io/technote/docs/gitmergesquash.html" class="read-more-btn">記事を読む</a>
+                        </article>
+
+                        <article class="article-card">
+                            <h3 class="article-title">ディレクトリごとにgitアカウントとSSHキーを自動で切り替える設定</h3>
+                            <p class="article-summary">リポジトリ/ディレクトリごとにコミット作者と認証情報を自動で切り替える</p>
+                            <div class="article-meta">2025年7月21日 | Git, CLI</div>
+                            <a href="https://nonokuno.github.io/technote/docs/switchgitaccounts.html" class="read-more-btn">記事を読む</a>
+                        </article>
+                    </div>
+                </details>
+            </section>
+
+            <section id="category-linux" class="category-section">
+                <details>
+                    <summary class="category-title">Linux</summary>
+                    <div class="articles-grid">
+                        <article class="article-card">
+                            <h3 class="article-title">Ubuntuでテキストファイルを連結する方法</h3>
+                            <p class="article-summary">2つのファイルを連結したいとき</p>
+                            <div class="article-meta">2025年8月9日 | Linux, CLI</div>
+                            <a href="https://nonokuno.github.io/technote/docs/linuxcat.html" class="read-more-btn">記事を読む</a>
+                        </article>
+
+                        <article class="article-card">
+                            <h3 class="article-title">UbuntuでSSD/HDDを自動マウントする設定</h3>
+                            <p class="article-summary">内蔵または外付けのSSDやHDDを起動時に自動マウントする</p>
+                            <div class="article-meta">2025年8月9日 | Linux, CLI</div>
+                            <a href="https://nonokuno.github.io/technote/docs/linuxfstab.html" class="read-more-btn">記事を読む</a>
+                        </article>
+
+                        <article class="article-card">
+                            <h3 class="article-title">UbuntuにおけるZIPファイルの解凍方法</h3>
+                            <p class="article-summary">ZIP形式のアーカイブファイルを解凍する手順</p>
+                            <div class="article-meta">2025年8月9日 | Linux, CLI</div>
+                            <a href="https://nonokuno.github.io/technote/docs/linuxunzip.html" class="read-more-btn">記事を読む</a>
+                        </article>
+                    </div>
+                </details>
+            </section>
+
+            <section id="category-docker" class="category-section">
+                <details>
+                    <summary class="category-title">Docker</summary>
+                    <div class="articles-grid">
+                        <article class="article-card">
+                            <h3 class="article-title">Dockerfileにおける環境変数の設定方法</h3>
+                            <p class="article-summary">Dockerfileで環境変数を設定する</p>
+                            <div class="article-meta">2025年8月9日 | Docker</div>
+                            <a href="https://nonokuno.github.io/technote/docs/dockerfileenv.html" class="read-more-btn">記事を読む</a>
+                        </article>
+                    </div>
+                </details>
+            </section>
+
+            <section id="category-python" class="category-section">
+                <details>
+                    <summary class="category-title">Python</summary>
+                    <div class="articles-grid">
+                        <article class="article-card">
+                            <h3 class="article-title">PyTorchのバージョン確認とアップグレード方法</h3>
+                            <p class="article-summary">PyTorchのバージョン確認とアップグレードを簡単なコマンドで実行する</p>
+                            <div class="article-meta">2025年7月27日 | Python, PyTorch</div>
+                            <a href="https://nonokuno.github.io/technote/docs/pythonversion.html" class="read-more-btn">記事を読む</a>
+                        </article>
+                    </div>
+                </details>
+            </section>
         </div>
-
 
         <div class="about-section">
             <h3>このブログについて</h3>
@@ -318,8 +248,19 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 TechNote. All rights reserved.</p>
+            <p>&copy; 2025 TechNote. All rights reserved. | Version: <span id="app-version"></span></p>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('version.json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('app-version').textContent = data.version;
+                })
+                .catch(error => console.error('Error loading version:', error));
+        });
+    </script>
 </body>
 </html>
