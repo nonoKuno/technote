@@ -3,6 +3,7 @@
     max-width: 1000px;
 }
 
+/* サイトタイトルのスタイル */
 .header {
     padding: 60px 0;
     text-align: center;
@@ -21,6 +22,40 @@
     margin: 0 auto;
 }
 
+/* ナビゲーションヘッダーのスタイル */
+.main-header {
+    background: #2c3e50;
+    padding: 10px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.header-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap; 
+}
+
+.header-nav a {
+    text-decoration: none;
+    color: #ecf0f1;
+    font-size: 1em;
+    padding: 10px 15px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.header-nav a:hover {
+    background-color: #34495e;
+}
+
+/* メインコンテンツエリアのスタイル */
 .main-content {
     background: white;
     padding: 40px;
@@ -37,6 +72,47 @@
     border-bottom: 2px solid #ecf0f1;
 }
 
+/* カテゴリ関連のスタイル */
+.category-section {
+    margin-bottom: 50px;
+}
+
+.category-section details > summary {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: #34495e;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ecf0f1;
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+    padding-left: 28px;
+    transition: margin-bottom 0.2s ease;
+}
+
+.category-section details > summary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    border-bottom: 2px solid #34495e;
+    border-right: 2px solid #34495e;
+    transition: transform 0.2s ease;
+}
+
+.category-section details[open] > summary {
+    margin-bottom: 25px;
+    border-bottom: 2px solid #34495e;
+}
+
+.category-section details[open] > summary::before {
+    transform: translateY(-70%) rotate(225deg);
+}
+
+/* 記事カードのグリッドスタイル */
 .articles-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -49,7 +125,7 @@
     border: 1px solid #e1e8ed;
     padding: 25px;
     border-radius: 6px;
-    transition: transform 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .article-card:hover {
@@ -93,6 +169,7 @@
     background: #2c3e50;
 }
 
+/* ブログ概要セクション */
 .about-section {
     background: #ecf0f1;
     padding: 30px;
@@ -110,16 +187,14 @@
     color: #5a6c7d;
 }
 
+/* フッター */
 .footer {
     border-top: 1px solid #e1e8ed;
     margin-top: 40px;
 }
 
+/* レスポンシブ対応 */
 @media (max-width: 768px) {
-    .main-content {
-        padding: 20px;
-    }
-    
     .header {
         padding: 40px 0;
     }
@@ -128,108 +203,17 @@
         font-size: 2em;
     }
     
+    .main-content {
+        padding: 20px;
+    }
+    
     .articles-grid {
         grid-template-columns: 1fr;
     }
 }
 
-/* サイトタイトルエリアのスタイル */
-.site-title-area {
-    padding: 60px 0;
-    text-align: center;
-}
-
-.site-title-area h1 {
-    font-size: 2.5em;
-    margin-bottom: 10px;
-    font-weight: 300;
-}
-
-.site-title-area p {
-    font-size: 1.1em;
-    opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* 新しいナビゲーションヘッダーのスタイル */
-.main-header {
-    background: #2c3e50; /* ヘッダーの背景色 */
-    padding: 10px 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-
-    /* 画面上部にヘッダーを固定する設定 */
-    position: sticky;
-    top: 0;
-    z-index: 1000; /* 他の要素より手前に表示 */
-}
-
-.header-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center; /* 中央揃え */
-    gap: 20px; /* 項目間のスペース */
-    flex-wrap: wrap; 
-}
-
-.header-nav a {
-    text-decoration: none;
-    color: #ecf0f1; /* 文字色 */
-    font-size: 1em;
-    padding: 10px 15px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-}
-
-.header-nav a:hover {
-    background-color: #34495e; /* ホバー時の背景色 */
-}
-
-.container {
-    padding-top: 20px; /* ヘッダーの高さに応じて調整 */
-}
-
-@media (max-width: 768px) {
-    .site-title-area { /* .headerから変更 */
-        padding: 40px 0;
-    }
-    
-    .site-title-area h1 { /* .header h1から変更 */
-        font-size: 2em;
-    }
-}
-
-/* ナビゲーションヘッダーのスタイル */
-.main-header {
-    background: #2c3e50; /* ナビゲーションバーの背景色 */
-    padding: 10px 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    position: sticky; /* スクロールに追従させる */
-    top: 0;
-    z-index: 1000;
-}
-
-.header-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap; 
-}
-
-.header-nav a {
-    text-decoration: none;
-    color: #ecf0f1;
-    font-size: 1em;
-    padding: 10px 15px;
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-}
-
-.header-nav a:hover {
-    background-color: #34495e;
+/* ナビゲーションのリンク先がヘッダーに隠れるのを防ぐ */
+#latest-articles,
+.category-section {
+    scroll-margin-top: 100px;
 }
