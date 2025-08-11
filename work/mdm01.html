@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>マスク化拡散モデル解説 第1回：拡散パラダイム - ノイズからのデータ復元</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.8; 
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2, h3 { 
+            color: #1a1a1a;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        h1 {
+            font-size: 2.5em;
+        }
+        h2 {
+            font-size: 2em;
+            margin-top: 40px;
+        }
+        h3 {
+            font-size: 1.5em;
+            border-bottom: 1px solid #f0f0f0;
+            margin-top: 30px;
+        }
+        code { 
+            background-color: #f4f4f4; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 0.9em;
+        }
+        blockquote { 
+            border-left: 5px solid #ccc; 
+            padding-left: 20px; 
+            margin-left: 0;
+            background-color: #f9f9f9;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+      .container {
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>マスク化拡散モデル解説 第1回：拡散パラダイム - ノイズからのデータ復元</h1>
+        
+        <h2>序論：自己回帰モデルの課題と非自己回帰モデル</h2>
+        <p>
+            自然言語処理（NLP）および生成モデリングの分野では、長年、自己回帰モデル（Autoregressive Models, ARM）が主流であった。これらのモデルは、シーケンスを一度に1トークンずつ、通常は左から右へと生成する。この手法は多くのタスクで高い性能を達成したが、逐次的な生成プロセスに起因する推論速度の遅延という本質的な課題を抱えている。各トークンの生成が先行する全トークンに依存するため、並列化が困難であり、長いシーケンスではボトルネックとなる。また、一方向のコンテキストしか考慮できないため、双方向の文脈理解が重要なタスクでは性能が限定的であった [1, 2]。
+        </p>
+        <p>
+            これらの課題を克服するため、非自己回帰的な生成手法が注目されるようになった。その中心的な動機は、推論時の大幅な並列化と高速化の実現にある。この文脈で登場したのが、マスク化拡散モデル（Masked Diffusion Models, MDM）である。MDMは、データシーケンス全体を同時に操作し、反復的な洗練と双方向の推論を可能にすることで、ARMの根本的な限界に対する解決策を提示する [3, 4, 5, 6]。
+        </p>
+        <p>
+            本連載では、MDMを体系的に理解するための技術的背景を解説する。第1回となる本稿では、MDMを構成する二つの基礎的な技術的柱のうち、一つ目の「拡散パラダイム」を詳述する。
+        </p>
+
+        <h2>第1章 拡散パラダイム：ノイズからのデータ復元</h2>
+        
+        <h3>1.1. Denoising Diffusion Probabilistic Models (DDPM)</h3>
+        <p>
+            現代的な拡散モデルの普及は、Hoらによる2020年の論文「Denoising Diffusion Probabilistic Models」（DDPM）から始まった [7, 8, 9, 10]。この研究は、反復的なデノイジングプロセスを通じて、GANに匹敵する品質の画像を生成可能であることを示し、生成モデルの新たな方向性を示した。
+        </p>
+        
+        <blockquote>
+            <strong>拡散モデルの基本プロセス：</strong>
+            <ol>
+                <li><strong>順方向プロセス（拡散）：</strong>元のデータ（例：画像）に、複数ステップにわたって徐々にノイズを付加し、最終的に既知のノイズ分布（例：標準ガウス分布）に変換する。</li>
+                <li><strong>逆方向プロセス（デノイジング）：</strong>ノイズ分布からサンプリングしたデータを初期値とし、学習済みのニューラルネットワークを用いて複数ステップにわたりノイズを段階的に除去し、元のデータ分布に属するサンプルを復元する。</li>
+            </ol>
+        </blockquote>
+
+        <p>
+            <strong>順方向プロセス (q):</strong> DDPMの順方向プロセス<code>q</code>は、元のクリーンなデータ<code>x_0</code>から始まり、$T$ステップにわたって徐々にガウスノイズを付加していく固定のマルコフ連鎖である [7, 11]。このプロセスの重要な特性は、任意のタイムステップ$t$におけるノイズ付きデータ<code>x_t</code>を、元のデータ<code>x_0</code>から閉じた形式で直接サンプリングできる点であり、これにより訓練が効率化される [7, 12]。
+        </p>
+        <p>
+            <strong>逆方向プロセス ($p_\theta$):</strong> 逆方向プロセス<code>p_θ</code>は、この拡散プロセスを逆転させることを学習する。純粋なガウスノイズ<code>x_T</code>から出発し、ニューラルネットワーク（画像生成ではU-Netアーキテクチャが多用される [11, 12]）を用いて反復的にノイズを除去する。訓練は変分下界（VLB）の最適化によって行われるが、Hoらは目的関数を単純化し、各ステップで付加されたノイズ<code>ε</code>そのものを予測する方が、学習が安定し高品質な生成につながることを経験的に示した [10, 13]。
+        </p>
+        <p>
+            DDPMは、反復的な洗練に基づく強力かつ安定した高品質な生成フレームワークを確立した。Nichol & Dhariwal (2021)による後続研究では、逆方向プロセスの分散を学習するなどの改良により、サンプリングステップ数を大幅に削減することに成功し、拡散モデルの実用性を高めた [13, 14, 15]。
+        </p>
+
+        <h3>1.2. 確率微分方程式 (SDE) による統一</h3>
+        <p>
+            DDPMの成功を受け、Songら (2020) は「Score-Based Generative Modeling through Stochastic Differential Equations」において、拡散モデルをより一般的かつ厳密な数学的枠組みである確率微分方程式（SDE）を用いて統一した [16, 17, 18, 19, 20, 21]。
+        </p>
+        <p>
+            <strong>SDEフレームワーク:</strong> この研究の核心は、DDPMのような離散時間ステップのプロセスを、連続時間で記述されるSDEの離散化として解釈する点にある。順方向プロセスはデータ分布をノイズ分布に変換するSDEとして定義され、このプロセスを時間反転させた逆時間SDEを解くことでデータが生成される。この逆時間SDEを解くために必要なのは、各時刻における摂動データ分布の対数確率密度の勾配、すなわち「スコア」のみである [16, 17, 19]。
+        </p>
+        <p>
+            このSDEフレームワークは、DDPMやスコアマッチングといった既存のアプローチを、単一のSDEの異なる離散化手法として統一的に説明することを可能にした [16, 17]。この理論的統一は、予測器・修正器（predictor-corrector）サンプラーの開発や、等価な常微分方程式（ODE）による正確な尤度計算への道を拓くなど、実用的な進展ももたらした [16, 17, 22]。この連続時間の視点は、後に離散MDMの目的関数を単純化する上で重要な理論的基盤となった [23]。
+        </p>
+        
+        <hr style="margin: 40px 0;">
+        <p>
+            本稿では、マスク化拡散モデル（MDM）を支える二つの基礎的なパラダイムのうち、拡散モデルについて解説した。次回の記事では、もう一つの基礎であるマスク化言語モデルについて詳述し、これら二つの概念がどのようにMDMへと統合されていくのかを解説する。
+        </p>
+    </div>
+</body>
+</html>

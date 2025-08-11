@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>論文要約: Train for the Worst, Plan for the Best</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .highlight {
+            background-color: #e0f2fe; /* sky-100 */
+            border-left: 4px solid #0ea5e9; /* sky-500 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1.5rem 0;
+        }
+        .highlight-title {
+            font-weight: 700;
+            color: #0369a1; /* sky-700 */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        h1, h2, h3 {
+            font-weight: 700;
+        }
+        .icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">論文要約：Train for the Worst, Plan for the Best</h1>
+            <p class="text-lg text-slate-600 mt-2">マスク化拡散モデル（MDM）におけるトークン順序付けの理解</p>
+        </header>
+
+        <!-- Overall Summary -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold border-b-2 border-slate-200 pb-2 mb-4">概要</h2>
+            <p class="text-base leading-relaxed">
+                この研究は、テキストやタンパク質構造などの離散データを生成するモデルの一種である<strong>マスク化拡散モデル（MDM）</strong>の新たな可能性を提示するものです。MDMは、訓練時に非常に複雑で困難なタスクを学習する必要がある一方、推論（生成）時にはトークンを任意の順序で生成できるという高い柔軟性を持ちます。本論文は、この「訓練の複雑さ」と「推論の柔軟性」という二つの側面に焦点を当て、MDMが抱える課題とその革新的な解決策を理論と実験の両面から深く探求しています。
+            </p>
+        </section>
+
+        <!-- Section 1: The Challenge -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold border-b-2 border-slate-200 pb-2 mb-4">第1部：課題 - 「最悪に備える訓練」</h2>
+            <p class="text-base leading-relaxed mb-4">
+                MDMの訓練は、文中のランダムな単語を隠し（マスキング）、それを予測するという「穴埋め問題」を無数に解くことに相当します。これは、単純に次々と単語を予測する自己回帰モデル（ARM）に比べて、本質的に困難なタスクです。
+            </p>
+            <div class="highlight">
+                <h3 class="highlight-title">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    革新的な点①：訓練の困難さの理論的証明
+                </h3>
+                <p class="mt-2 text-slate-700">
+                    この論文が画期的なのは、MDMの訓練がなぜ難しいのかを、世界で初めて<strong>理論的に証明</strong>した点です。研究者たちは「潜在・観測（L&O）分布」という独自の理論モデルを構築し、MDMが学習するタスクの中に、計算上非常に解きにくい問題（計算複雑性理論における困難な問題）が含まれていることを数学的に示しました。これにより、MDMの性能課題が単なる経験則ではなく、理論に根差したものであることを明らかにしました。
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: The Breakthrough -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold border-b-2 border-slate-200 pb-2 mb-4">第2部：ブレークスルー - 「最良のための計画」</h2>
+            <p class="text-base leading-relaxed mb-4">
+                論文は、訓練の困難さという課題を逆手に取り、MDMが持つ「推論時の柔軟性」を最大限に活用するアプローチを提案します。標準的なMDMはランダムな順序でトークンを生成しますが、これでは訓練時に苦手だった難しい問題に直面してしまう可能性があります。
+            </p>
+            <div class="highlight">
+                <h3 class="highlight-title">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+                    革新的な点②：「適応的推論」という新発想
+                </h3>
+                <p class="mt-2 text-slate-700">
+                    ここでの最大のブレークスルーは、<strong>「適応的推論」</strong>という全く新しい手法です。これは、モデルを再訓練することなく、推論の方法自体を変えるというパラダイムシフトです。具体的には、生成の各ステップで、モデルが予測に最も「確信」を持っているトークンから順に生成していきます。
+                </p>
+                <ul class="list-disc list-inside mt-2 space-y-1 text-slate-700">
+                    <li><strong>Top-K確率マージン</strong>: 特に効果的だったのがこの戦略です。単に最も確率が高い候補を選ぶだけでなく、「1位と2位の候補の確率差」を確信度の指標とします。これにより、複数の候補で迷っている不確実な状況を避け、本当に簡単な問題から解くことが可能になります。</li>
+                </ul>
+                <p class="mt-2 text-slate-700">
+                    この発想の核心は、「MDMは全ての組み合わせを学習しているからこそ、推論時には最も解きやすい道筋を選べる」という逆転の発想にあります。
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 3: Results -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold border-b-2 border-slate-200 pb-2 mb-4">第3部：常識を覆す実験結果</h2>
+            <p class="text-base leading-relaxed mb-4">
+                適応的推論の効果は、実験によって劇的に証明されました。特にロジックパズルでの結果は、AI研究における常識を覆すものでした。
+            </p>
+            <div class="highlight">
+                <h3 class="highlight-title">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    革新的な点③：教師あり学習を超えた性能と未知の解法発見能力
+                </h3>
+                <p class="mt-2 text-slate-700">
+                    Sudokuパズルを解く実験では、驚くべき結果が示されました。
+                </p>
+                <ul class="list-disc list-inside mt-2 space-y-1 text-slate-700">
+                    <li><strong>性能の飛躍的向上</strong>: 600万パラメータの小規模なMDMの正解率は、標準的な推論では7%未満でしたが、適応的推論を用いることで<strong>約90%</strong>にまで向上しました。</li>
+                    <li><strong>教師あり学習超え</strong>: この結果は、正解の順序を人間が教え込んだ（教師あり学習させた）<strong>7倍も大きい4200万パラメータのARMの性能（87%）を上回りました。</strong></li>
+                    <li><strong>自律的な解法発見</strong>: これは、MDMが教師なしで、タスクを解くための最適な「思考経路」や「推論手順」を自律的に発見できることを意味します。</li>
+                    <li><strong>高い汎化能力</strong>: さらに、訓練データにはない、より難しいパズルに対してもARMより高い性能を維持し、表面的な暗記ではなく、パズルの論理構造を深く学習していることが示唆されました。</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <footer class="mt-16 pt-8 border-t-2 border-slate-200">
+            <h2 class="text-2xl font-bold mb-4">結論</h2>
+            <p class="text-base leading-relaxed">
+                本研究は、マスク化拡散モデル（MDM）が「適応的推論」と組み合わさることで、訓練時の不利を克服し、驚異的な性能を発揮することを示しました。特に、決まった手順のない複雑な推論タスクにおいて、MDMが自律的に最適な解法を見つけ出す能力を持つことを明らかにした点は、今後のAI研究の方向性に大きな影響を与える画期的な成果と言えます。
+            </p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
