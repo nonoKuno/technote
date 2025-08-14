@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Submodule vs. Subtree 比較</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Simple style for better readability */
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Git Submodule vs. Subtree</h1>
+            <p class="mt-2 text-lg text-gray-600">外部リポジトリをプロジェクトに取り込む2つの方法の違い</p>
+        </header>
+
+        <!-- Comparison Table Section -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-semibold text-center mb-6">比較まとめ</h2>
+            <div class="overflow-x-auto shadow-lg rounded-lg">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-200">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">項目</th>
+                            <th scope="col" class="px-6 py-3">Git Submodule (リンク方式)</th>
+                            <th scope="col" class="px-6 py-3">Git Subtree (コピー方式)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">基本概念</th>
+                            <td class="px-6 py-4">外部リポジトリへの**リンク（参照）**を保持</td>
+                            <td class="px-6 py-4">外部リポジトリのファイルと履歴を**丸ごとコピー**</td>
+                        </tr>
+                        <tr class="bg-gray-50 border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">履歴管理</th>
+                            <td class="px-6 py-4">親と子の履歴は**完全に分離**</td>
+                            <td class="px-6 py-4">親リポジトリに子の履歴が**統合される**</td>
+                        </tr>
+                        <tr class="bg-white border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">リポジトリサイズ</th>
+                            <td class="px-6 py-4">最小限（参照情報のみ追加）</td>
+                            <td class="px-6 py-4">子リポジトリの分だけ**増加する**</td>
+                        </tr>
+                        <tr class="bg-gray-50 border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">クローン時</th>
+                            <td class="px-6 py-4">`git clone --recurse-submodules` が必要</td>
+                            <td class="px-6 py-4">通常の `git clone` のみでOK</td>
+                        </tr>
+                        <tr class="bg-white border-b">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">更新の取得</th>
+                            <td class="px-6 py-4">① submoduleディレクトリに移動<br>② `git pull`</td>
+                            <td class="px-6 py-4">`git subtree pull` コマンドを使用</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">変更の反映</th>
+                            <td class="px-6 py-4">① submodule内でコミット＆プッシュ<br>② 親リポジトリで更新をコミット</td>
+                            <td class="px-6 py-4">`git subtree push` コマンドを使用</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Detailed Explanation Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Git Submodule Card -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold mb-4 text-blue-600">Git Submodule</h3>
+                <p class="mb-6 text-gray-700">
+                    親リポジトリ内に、外部リポジトリの特定のコミットを指し示す「ポインター」を置く方法。履歴は完全に独立しています。
+                </p>
+                <div class="mb-4">
+                    <h4 class="font-semibold text-lg mb-2">メリット 👍</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>親リポジトリの履歴がクリーンに保たれる</li>
+                        <li>プロジェクトと依存関係の分離が明確</li>
+                        <li>子リポジトリへの変更の反映が簡単</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg mb-2">デメリット 👎</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>ワークフローが複雑（追加コマンドが必要）</li>
+                        <li>submoduleの更新コミットを忘れやすい</li>
+                        <li>Git初心者に優しくない</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Git Subtree Card -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-2xl font-bold mb-4 text-green-600">Git Subtree</h3>
+                <p class="mb-6 text-gray-700">
+                    外部リポジトリのファイルと履歴を、親リポジトリのサブディレクトリに「コピー」する方法。一度取り込むと親の一部になります。
+                </p>
+                <div class="mb-4">
+                    <h4 class="font-semibold text-lg mb-2">メリット 👍</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>利用者は特別なコマンド不要でシンプル</li>
+                        <li>`.gitmodules`のような管理ファイルが不要</li>
+                        <li>オフラインでも作業可能</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-lg mb-2">デメリット 👎</h4>
+                    <ul class="list-disc list-inside space-y-1 text-gray-700">
+                        <li>親リポジトリの履歴が複雑化・肥大化する</li>
+                        <li>子リポジトリへの変更反映が少し複雑</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Case Section -->
+        <section class="mt-12 bg-white p-8 rounded-lg shadow-lg">
+            <h2 class="text-2xl font-semibold text-center mb-6">どちらを選ぶべきか？</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="font-bold text-lg mb-3 text-blue-700">Submoduleが適しているケース</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>外部ライブラリのバージョンを厳密に管理したい。</li>
+                        <li>コードを直接変更せず、定期的な更新が主。</li>
+                        <li>親プロジェクトの履歴をクリーンに保ちたい。</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-3 text-green-700">Subtreeが適しているケース</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-700">
+                        <li>プロジェクト利用者の手間を減らしたい。</li>
+                        <li>外部コードを頻繁にカスタマイズし、親側で管理したい。</li>
+                        <li>シンプルなワークフローを優先したい。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <footer class="text-center mt-10 py-4 border-t">
+            <p class="text-sm text-gray-500">Gitの依存関係管理方法の選択にお役立てください。</p>
+        </footer>
+
+    </div>
+
+</body>
+</html>
