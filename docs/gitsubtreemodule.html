@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>Git Submodule vs. Subtree 比較 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Git Submodule vs. Subtree 比較 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/gitsubtreemodule.html"
+    }
+    </script>
+    <style>
+        /* Basic table styling to match the template's aesthetic */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ecf0f1;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>Git Submodule vs. Subtree 比較</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Git Submodule vs. Subtree 比較</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年8月14日</span>
+                    <span>読了時間: 約10分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Git</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>外部リポジトリをプロジェクトに取り込むには、主にGit SubmoduleとGit Subtreeの2つの方法がある。本記事では、両者の違いについて詳しく解説する。</p>
+
+                <h2>比較まとめ</h2>
+                <p>まず、SubmoduleとSubtreeの主な違いを以下の表にまとめた。</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>Git Submodule (リンク方式)</th>
+                            <th>Git Subtree (コピー方式)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>基本概念</th>
+                            <td>外部リポジトリへの<strong>リンク（参照）</strong>を保持する</td>
+                            <td>外部リポジトリのファイルと履歴を<strong>丸ごとコピー</strong>する</td>
+                        </tr>
+                        <tr>
+                            <th>履歴管理</th>
+                            <td>親と子の履歴は<strong>完全に分離</strong>される</td>
+                            <td>親リポジトリに子の履歴が<strong>統合される</strong></td>
+                        </tr>
+                        <tr>
+                            <th>リポジトリサイズ</th>
+                            <td>最小限（参照情報のみ追加）である</td>
+                            <td>子リポジトリの分だけ<strong>増加する</strong></td>
+                        </tr>
+                        <tr>
+                            <th>クローン時</th>
+                            <td><code>git clone --recurse-submodules</code> が必要である</td>
+                            <td>通常の <code>git clone</code> のみで良い</td>
+                        </tr>
+                        <tr>
+                            <th>更新の取得</th>
+                            <td>① submoduleディレクトリに移動<br>② <code>git pull</code></td>
+                            <td><code>git subtree pull</code> コマンドを使用する</td>
+                        </tr>
+                        <tr>
+                            <th>変更の反映</th>
+                            <td>① submodule内でコミット＆プッシュ<br>② 親リポジトリで更新をコミット</td>
+                            <td><code>git subtree push</code> コマンドを使用する</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h2>Git Submodule</h2>
+                <p>親リポジトリ内に、外部リポジトリの特定のコミットを指し示す「ポインター」を置く方法である。履歴は完全に独立している。</p>
+                <h3>メリット 👍</h3>
+                <ul>
+                    <li>親リポジトリの履歴がクリーンに保たれる</li>
+                    <li>プロジェクトと依存関係の分離が明確である</li>
+                    <li>子リポジトリへの変更の反映が簡単である</li>
+                </ul>
+                <h3>デメリット 👎</h3>
+                <ul>
+                    <li>ワークフローが複雑である（追加コマンドが必要）</li>
+                    <li>submoduleの更新コミットを忘れやすい</li>
+                    <li>Git初心者に優しくない</li>
+                </ul>
+
+                <h2>Git Subtree</h2>
+                <p>外部リポジトリのファイルと履歴を、親リポジトリのサブディレクトリに「コピー」する方法である。一度取り込むと親の一部となる。</p>
+                <h3>メリット 👍</h3>
+                <ul>
+                    <li>利用者は特別なコマンドが不要でシンプルである</li>
+                    <li><code>.gitmodules</code>のような管理ファイルが不要である</li>
+                    <li>オフラインでも作業可能である</li>
+                </ul>
+                <h3>デメリット 👎</h3>
+                <ul>
+                    <li>親リポジトリの履歴が複雑化・肥大化する</li>
+                    <li>子リポジトリへの変更反映が少し複雑である</li>
+                </ul>
+
+                <h2>どちらを選ぶべきか？</h2>
+                <p>どちらの方法が適しているかは、プロジェクトの要件やチームのスキルセットによって異なる。</p>
+                <h3>Submoduleが適しているケース</h3>
+                <ul>
+                    <li>外部ライブラリのバージョンを厳密に管理したい場合。</li>
+                    <li>コードを直接変更せず、定期的な更新が主である場合。</li>
+                    <li>親プロジェクトの履歴をクリーンに保ちたい場合。</li>
+                </ul>
+                <h3>Subtreeが適しているケース</h3>
+                <ul>
+                    <li>プロジェクト利用者の手間を減らしたい場合。</li>
+                    <li>外部コードを頻繁にカスタマイズし、親側で管理したい場合。</li>
+                    <li>シンプルなワークフローを優先したい場合。</li>
+                </ul>
+
+                <h2>まとめ</h2>
+                <p>Gitの依存関係管理はプロジェクトの効率に大きく影響する。Submoduleは依存関係の分離を重視する場合に、Subtreeはシンプルさを求める場合に適している。それぞれのメリット・デメリットを理解し、プロジェクトに合った最適な方法を選択することが重要である。</p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>
