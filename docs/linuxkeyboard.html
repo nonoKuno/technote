@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinuxでMac風の日本語・英語キーボード切り替えを設定する方法 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>LinuxでMac風の日本語・英語キーボード切り替えを設定する方法</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">LinuxでMac風の日本語・英語キーボード切り替えを設定する方法</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年9月4日</span>
+                    <span>読了時間: 約6分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Linux</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>
+                    Linuxでも、Macのように「変換」キーで日本語入力を有効に、「無変換」キーで無効（英数入力）にすることが可能である。これにより、現在の入力モードを意識することなく、直感的に言語を切り替えられる。ここでは、日本語入力メソッド「Mozc」自体の設定を変更する方法を紹介する。
+                </p>
+
+                <h2>Mozcのキー設定を変更する方法</h2>
+                <p>日本語入力メソッド「Mozc」自体の設定を直接変更することで、キーの動作を細かくカスタマイズできる。以下の手順に従って設定を行う。</p>
+
+                <h3>ステップ1: Mozcプロパティを開く</h3>
+                <p>画面右上のキーボードアイコン（<code>JA</code>や<code>A</code>など）をクリックし、「ツール」→「プロパティ」を選択する。</p>
+
+                <h3>ステップ2: キー設定のカスタマイズ</h3>
+                <ol>
+                    <li>「Mozc プロパティ」ウィンドウが開いたら、「<strong>一般</strong>」タブを選択する。</li>
+                    <li>「キー設定」の項目で、「キー設定の選択」のプルダウンメニューから「<strong>カスタム</strong>」を選び、右側の「<strong>編集</strong>」ボタンを押す。</li>
+                </ol>
+                
+                <h3>ステップ3: キーの割り当て</h3>
+                <p>「Mozc キー設定」ウィンドウの下部にある「<strong>編集</strong>」ボタンを押し、「<strong>エントリーを追加</strong>」を選択して、以下の2つの設定を追加する。</p>
+
+                <ul>
+                    <li><strong>設定1: 日本語入力ON</strong>
+                        <ul>
+                            <li>モード: <code>直接入力</code></li>
+                            <li>入力キー: <code>Henkan</code></li>
+                            <li>コマンド: <code>IMEを有効化</code></li>
+                        </ul>
+                    </li>
+                    <li><strong>設定2: 日本語入力OFF</strong>
+                        <ul>
+                            <li>モード: <code>入力文字なし</code></li>
+                            <li>入力キー: <code>Muhenkan</code></li>
+                            <li>コマンド: <code>IMEを無効化</code></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <blockquote>
+                ✅ 「OK」を押してすべてのウィンドウを閉じれば設定完了である。
+                </blockquote>
+
+                <h2>まとめ</h2>
+                <p>この設定を行うことで、Macと同じような快適な日本語・英語の切り替え操作がLinuxでも実現できる。入力モードを意識することなく、よりスムーズに作業を進められるようになる。</p>
+
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux接続時にiPhoneの自動テザリングを無効化する方法 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>Linux接続時にiPhoneの自動テザリングを無効化する方法</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Linux接続時にiPhoneの自動テザリングを無効化する方法</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年9月4日</span>
+                    <span>読了時間: 約8分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Linux</span>
+                    <span class="tag">iPhone</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <h2>問題の概要</h2>
+                <p>
+                    iPhoneをUSBケーブルでLinux PCに接続すると、Linux側でネットワーク接続を有効化していないにも関わらず、iPhone側がWi-Fi接続を停止し、モバイルデータ通信（5G/4G）によるインターネット共有の待受状態に入ってしまう。これはLinuxのNetworkManagerがiPhoneをネットワークデバイスとして「認識」し、自動的に管理対象に置くために発生する挙動である。
+                </p>
+                <p>
+                    本稿では、NetworkManagerにiPhoneのネットワークインターフェースを完全に無視させ、この自動的なモード切り替えを防ぐ手順を記述する。
+                </p>
+
+                <h2>手順1：iPhoneのMACアドレスを特定する</h2>
+                <p>
+                    まず、NetworkManagerに無視させる対象を特定するため、iPhoneのネットワークインターフェースに割り当てられたMACアドレスを調べる必要がある。
+                </p>
+                <ol>
+                    <li>iPhoneをUSBでLinux PCに接続する。</li>
+                    <li>ターミナルを起動し、以下のコマンドを実行する。
+                        <pre><code>ip a</code></pre>
+                    </li>
+                    <li>
+                        出力結果から、<code>usb0</code>や<code>enp</code>で始まるような、iPhoneに対応するインターフェースを探す。その項目内にある<code>link/ether</code>の右隣に表示される<code>xx:xx:xx:xx:xx:xx</code>形式の文字列がMACアドレスである。この値を控えておく。
+                    </li>
+                </ol>
+
+                <h2>手順2：NetworkManagerの設定ファイルを作成する</h2>
+                <p>
+                    次に、特定したMACアドレスを持つデバイスをNetworkManagerの管理対象から除外するための設定ファイルを作成する。
+                </p>
+                <ol>
+                    <li>
+                        ターミナルで以下のコマンドを実行し、管理者権限で新しい設定ファイルを開く。実行時にパスワードの入力が求められる。
+                        <pre><code>sudoedit /etc/NetworkManager/conf.d/99-ignore-iphone.conf</code></pre>
+                    </li>
+                    <li>
+                        エディタが開いたら、以下の内容を記述する。<code>XX:XX:XX:XX:XX:XX</code>の部分は、手順1で調べた自身のiPhoneのMACアドレスに書き換えること。
+                        <pre><code>[keyfile]
+unmanaged-devices=mac:XX:XX:XX:XX:XX:XX</code></pre>
+                    </li>
+                    <li>
+                        ファイルを保存し、エディタを終了する。
+                    </li>
+                </ol>
+
+                <h2>手順3：NetworkManagerを再起動して設定を適用する</h2>
+                <p>
+                    作成した設定をシステムに反映させるため、NetworkManagerサービスを再起動する。
+                </p>
+                <ol>
+                    <li>
+                        ターミナルで以下のコマンドを実行する。
+                        <pre><code>sudo systemctl restart NetworkManager</code></pre>
+                    </li>
+                </ol>
+                <p>
+                    以上の設定が完了した後、iPhoneのUSBケーブルを再接続すると、NetworkManagerがiPhoneを認識しなくなり、iPhone側でインターネット共有モードが自動で開始されなくなる。
+                </p>
+
+                <h2>（補足）設定を元に戻す方法</h2>
+                <p>
+                    将来的にUSBテザリング機能を使用したくなった場合は、作成した設定ファイルを削除することで元の状態に戻すことができる。
+                </p>
+                <pre><code>sudo rm /etc/NetworkManager/conf.d/99-ignore-iphone.conf
+sudo systemctl restart NetworkManager</code></pre>
+
+                <h2>まとめ</h2>
+                <p>
+                    iPhoneをUSBでLinux PCに接続した際に、iPhoneが意図せずインターネット共有待受状態（Wi-Fiからモバイルデータ通信への切り替え）になる問題は、NetworkManagerの自動認識機能が原因である。
+                </p>
+                <p>
+                    この問題を解決するには、iPhoneのMACアドレスを特定し、そのMACアドレスを持つデバイスを<code>unmanaged-devices</code>としてNetworkManagerの設定ファイルに記述することで、NetworkManagerの管理対象から恒久的に除外する。設定の適用にはNetworkManagerの再起動が必要である。これにより、PCはiPhoneをネットワークデバイスとして認識しなくなり、iPhone側の自動的なモード移行を根本的に防ぐことが可能となる。
+                </p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

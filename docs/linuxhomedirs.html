@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubuntuのホームディレクトリ名を英語に変更する | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>Ubuntuのホームディレクトリ名を英語に変更する</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Ubuntuのホームディレクトリ名を英語に変更する</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年9月4日</span>
+                    <span>読了時間: 約5分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Linux</span>
+                    <span class="tag">CLI</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>xdg-user-dirs-gtk-updateを利用し、ロケールに基づいたディレクトリ名を更新する手順である。</p>
+
+                <h2>1. 実行コマンド</h2>
+                <p>以下のコマンドをターミナルで実行することで、ディレクトリ名を英語（<code>LANG=C</code>ロケール）に更新するプロンプトが表示される。</p>
+                <pre><code>LANG=C xdg-user-dirs-gtk-update</code></pre>
+
+                <h2>2. コマンド解説</h2>
+                <h3><code>LANG=C</code></h3>
+                <p>コマンド実行時における環境変数<code>LANG</code>を一時的に<code>C</code>（POSIX標準ロケール）に設定する。これにより、後続のコマンドは英語環境で動作する。</p>
+                
+                <h3><code>xdg-user-dirs-gtk-update</code></h3>
+                <p>freedesktop.orgのXDG Base Directory Specificationに基づき、ユーザーの特殊ディレクトリ（<code>DESKTOP</code>, <code>DOWNLOADS</code>など）のパスを管理するツールである。現在のロケール設定（この場合は<code>C</code>）を<code>~/.config/user-dirs.locale</code>と比較し、差異があれば設定ファイル<code>~/.config/user-dirs.dirs</code>の更新をGUIダイアログでユーザーに提案する。</p>
+
+                <h2>3. 実行フロー</h2>
+                <ol>
+                    <li>コマンド実行後、GTKダイアログが表示される。</li>
+                    <li>ダイアログには、現在のディレクトリ名（例: <code>~/ダウンロード</code>）と新しいディレクトリ名（例: <code>~/Downloads</code>）の対応リストが表示される。</li>
+                    <li><strong>"Update Names"</strong> ボタンをクリックすると、<code>~/.config/user-dirs.dirs</code>が更新され、新しいディレクトリが作成される。</li>
+                    <li>変更をシステム全体に反映させるため、再ログインが推奨される。</li>
+                </ol>
+
+                <h2>4. 日本語への復元</h2>
+                <p>日本語ロケール環境で<code>LANG=C</code>を付与せずに同じコマンドを実行すると、日本語ディレクトリ名に戻すためのダイアログが表示される。</p>
+                <pre><code>xdg-user-dirs-gtk-update</code></pre>
+                
+                <blockquote>
+                <strong>Note:</strong> ディレクトリ内にファイルが存在する場合、元のディレクトリは削除されずに残る。必要に応じて手動でファイルを新しいディレクトリに移行すること。
+                </blockquote>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

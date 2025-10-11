@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>Docker GPUエラー対処ガイド | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Docker GPUエラー対処ガイド | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/dockergpudevices.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>Docker GPUエラー対処ガイド</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Docker GPUエラー対処ガイド</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年10月11日</span>
+                    <span>読了時間: 約5分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Docker</span>
+                    <span class="tag">GPU</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <h2>エラーの原因</h2>
+                <p>
+                    `could not select device driver "" with capability [[gpu]]` というエラーは、DockerコンテナがホストマシンのGPUにアクセスしようとした際に、必要なブリッジ役のソフトウェア、すなわち <strong>NVIDIA Container Toolkit</strong> がインストールされていないか、正しく設定されていないことが主な原因である。
+                </p>
+                <blockquote>
+                    Dockerは通常、GPUのような特殊なハードウェアを直接認識できない。そのため、ホストのNVIDIAドライバとコンテナ内を安全に連携させるための追加コンポーネントが必要となる。
+                </blockquote>
+
+                <h2>解決手順</h2>
+                
+                <h3>1. 前提条件: NVIDIAドライバの確認</h3>
+                <p>まず、ホストマシンにNVIDIAドライバが正しくインストールされているか確認する。</p>
+                <pre><code>nvidia-smi</code></pre>
+                <p>GPUモデルやドライババージョンが表示されれば正常である。</p>
+
+                <h3>2. NVIDIA Container Toolkit のインストール</h3>
+                <p>使用しているLinuxディストリビューションに合わせてコマンドを実行する。</p>
+                
+                <h4>Ubuntu / Debian の場合:</h4>
+                <pre><code># GPGキーとリポジトリの設定
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+# パッケージリストを更新
+sudo apt-get update
+
+# パッケージをインストール
+sudo apt-get install -y nvidia-container-toolkit</code></pre>
+
+                <h4>CentOS / RHEL の場合:</h4>
+                <pre><code># リポジトリの設定
+sudo curl -s -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo | \
+  sudo tee /etc/yum.repos.d/nvidia-container-toolkit.repo
+
+# パッケージをインストール
+sudo yum install -y nvidia-container-toolkit</code></pre>
+
+                <h3>3. Dockerデーモンの再起動</h3>
+                <p>設定を反映させるためにDockerを再起動する。</p>
+                <pre><code>sudo systemctl restart docker</code></pre>
+
+                <h3>4. 動作確認</h3>
+                <p>テスト用のコンテナを起動し、コンテナ内からGPUが認識できるか確認する。</p>
+                <pre><code>docker run --rm --gpus all nvidia/cuda:12.1.0-base-ubuntu22.04 nvidia-smi</code></pre>
+                <p>コンテナが起動し、`nvidia-smi`の出力が表示されれば成功である。</p>
+
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

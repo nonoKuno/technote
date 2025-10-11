@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dockerのディスク容量を管理するコマンドの解説 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <style>
+        /* template.htmlにはないテーブル用の簡易スタイルを追加 */
+        .article-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.95em;
+        }
+        .article-content th, .article-content td {
+            border: 1px solid #ecf0f1; /* 枠線の色を他の要素と合わせる */
+            padding: 12px;
+            text-align: left;
+        }
+        .article-content th {
+            background-color: #f8f9fa; /* 引用ブロックの背景色と合わせる */
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>Dockerのディスク容量を管理するコマンドの解説</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Dockerのディスク容量を管理するコマンドの解説</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年9月4日</span>
+                    <span>読了時間: 約7分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Docker</span>
+                    <span class="tag">CLI</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>
+                    Dockerを使用していると、イメージやコンテナ、ボリュームなどが溜まり、ディスク容量を圧迫することがある。ここでは、ディスク使用量の確認と、不要なデータを削除するための主要なコマンドについて解説する。
+                </p>
+
+                <h2>1. <code>docker system df -v</code></h2>
+                <p>
+                    このコマンドは、Dockerが現在使用しているディスク容量の内訳を<strong>詳細に</strong>確認するためのものである。<code>-v</code> (<code>--verbose</code>) オプションを付けることで、個々のイメージやコンテナがどれだけの容量を占有しているかまで表示される。<code>prune</code>コマンドを実行する前に、現状を把握するために極めて有用である。
+                </p>
+                <pre><code>docker system df -v</code></pre>
+                <p>
+                    実行すると、イメージ、コンテナ、ローカルボリューム、ビルドキャッシュのそれぞれについて、アクティブなものと解放可能なもの（RECLAIMABLE）が一覧で表示される。特に<code>RECLAIMABLE</code>の項目は、クリーンアップによってどれだけの容量が空くかの目安となる。
+                </p>
+
+                <h2>2. <code>docker image prune -a</code></h2>
+                <p>
+                    このコマンドは、<strong>使用されていないDockerイメージをすべて削除する</strong>ためのものである。Dockerを使っていると、ビルドの中間生成物や、古いバージョンのイメージが残り続けることがある。これらを一掃するのが目的である。
+                </p>
+                <ul>
+                    <li><code>prune</code>: 不要なものを刈り取る（削除する）という意味である。</li>
+                    <li><code>-a</code> (<code>--all</code>): このオプションが重要である。これを付けないと、タグが付いていない「dangling」（宙ぶらりん）なイメージしか削除されない。<strong>コンテナから参照されていないすべてのイメージ</strong>を削除対象とするために<code>-a</code>は必須である。</li>
+                </ul>
+                <pre><code>docker image prune -a</code></pre>
+                <p>
+                    実行すると、削除対象となるイメージの一覧が表示され、本当に削除してよいか確認を求められる。確認なしで強制的に実行したい場合は<code>-f</code> (<code>--force</code>) オプションを追加する。
+                </p>
+                
+                <h2>3. <code>docker system prune -a</code></h2>
+                <p>
+                    これは、Dockerシステム全体に対してクリーンアップを実行する、<strong>最も強力なコマンド</strong>である。イメージだけでなく、停止中のコンテナや未使用のネットワークなど、使われていないリソースをまとめて削除する。
+                </p>
+                <p>
+                    <code>docker image prune -a</code> と同様に、<code>-a</code>オプションを付けることで、未使用のイメージなどがすべて削除対象となる。（<code>-a</code>を付けない場合は、danglingなリソースのみが対象となる。）
+                </p>
+                <pre><code>docker system prune -a</code></pre>
+                <p>
+                    このコマンドが削除する対象は以下の通りである。
+                </p>
+                <ul>
+                    <li>停止しているすべてのコンテナ</li>
+                    <li>どのコンテナからも使用されていないすべてのネットワーク</li>
+                    <li>未使用のすべてのビルドキャッシュ</li>
+                </ul>
+                <blockquote>
+                    <strong>注意:</strong> このコマンドは非常に強力であり、意図しないデータ（例えば、一時的に停止しているコンテナなど）まで削除してしまう可能性がある。実行する前には、必ず<code>docker system df</code>で解放される容量を確認し、削除されても問題ないか検討すべきである。<strong>未使用のボリュームも削除したい場合は、 <code>--volumes</code> フラグを追加する必要がある。</strong>
+                </blockquote>
+
+                <h2>4. まとめ</h2>
+                <p>
+                    ここまで紹介した3つのコマンドの使い分けと推奨されるワークフローを以下にまとめる。安全なディスク管理のため、コマンドの特性を理解して使い分けることが重要である。
+                </p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>コマンド</th>
+                            <th>主な目的</th>
+                            <th>注意点</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>docker system df -v</code></td>
+                            <td><strong>現状確認</strong>。削除対象と解放可能な容量を詳細に把握する。</td>
+                            <td>削除は行わない。まず最初に実行すべきコマンド。</td>
+                        </tr>
+                        <tr>
+                            <td><code>docker image prune -a</code></td>
+                            <td><strong>イメージのみを掃除</strong>。未使用のイメージを一括削除する。</td>
+                            <td>コンテナやボリュームには影響しない、比較的安全なクリーンアップ。</td>
+                        </tr>
+                        <tr>
+                            <td><code>docker system prune -a</code></td>
+                            <td><strong>Docker全体の大掃除</strong>。イメージ、コンテナ、ネットワークなどをまとめて削除。</td>
+                            <td><strong>最も強力</strong>。意図しないデータ削除の可能性があるため、実行前に<code>df</code>での確認が必須。</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>推奨ワークフロー:</h3>
+                <ol>
+                    <li>まず <code>docker system df -v</code> で状況を確認する。</li>
+                    <li>イメージの整理が目的なら <code>docker image prune -a</code> を使う。</li>
+                    <li>ディスク全体を大幅に解放したい場合に限り、内容をよく確認した上で <code>docker system prune -a</code> を実行する。</li>
+                </ol>
+
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

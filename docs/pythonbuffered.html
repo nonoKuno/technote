@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>PYTHONUNBUFFERED=1 ってなに？ | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "PYTHONUNBUFFERED=1 ってなに？ | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/pythonbuffered.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>PYTHONUNBUFFERED=1 ってなに？</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">PYTHONUNBUFFERED=1 ってなに？</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年10月11日</span>
+                    <span>読了時間: 約6分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Python</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <h2>概要</h2>
+                <p>`PYTHONUNBUFFERED=1`は、Pythonの標準出力（`stdout`）と標準エラー出力（`stderr`）の**バッファリングを無効にする**ための環境変数である。</p>
+                <blockquote>
+                    通常、`print()`関数などで出力されたデータは、パフォーマンス向上のため、すぐにはコンソール等に書き込まれない。代わりに、ある程度の量が溜まるまで一時的にメモリ（バッファ）に保持され、まとめて書き出される。`PYTHONUNBUFFERED=1`を設定すると、この一時的な保持（バッファリング）がなくなり、出力が即座に行われるようになる。
+                </blockquote>
+
+                <h2>主な用途</h2>
+                <ul>
+                    <li><strong>ログのリアルタイム監視:</strong> DockerコンテナやCI/CDパイプラインでスクリプトを実行する際、ログをリアルタイムで確認したい場合に必須である。</li>
+                    <li><strong>デバッグ:</strong> プログラムが予期せずクラッシュした際、どこまで処理が進んだかを正確に知るのに役立つ。</li>
+                    <li><strong>プロセス間連携:</strong> あるプログラムの出力を、パイプ（`|`）を使って別のプログラムの入力として渡す際に、出力を即座に次のプロセスへ送りたい場合にスムーズな連携が可能になる。</li>
+                </ul>
+
+                <h2>設定方法</h2>
+                <h3>Linux / macOS</h3>
+                <pre><code>PYTHONUNBUFFERED=1 python your_script.py</code></pre>
+                
+                <h3>Docker (Dockerfile)</h3>
+                <pre><code>ENV PYTHONUNBUFFERED=1
+CMD ["python", "your_script.py"]</code></pre>
+
+                <h3>Windows (コマンドプロンプト)</h3>
+                <pre><code>set PYTHONUNBUFFERED=1
+python your_script.py</code></pre>
+
+                <h3>Windows (PowerShell)</h3>
+                <pre><code>$env:PYTHONUNBUFFERED=1
+python your_script.py</code></pre>
+
+                <h2>代替手段</h2>
+                <h3>`python` コマンドの `-u` オプション</h3>
+                <p>環境変数を設定する代わりに、 `-u` オプションを使っても同じ効果が得られる。</p>
+                <pre><code>python -u your_script.py</code></pre>
+
+                <h3>`print` 関数の `flush` 引数 (Python 3.3+)</h3>
+                <p>特定の `print` 文だけ即座に出力させたい場合に便利である。</p>
+                <pre><code>print("This message will be flushed immediately.", flush=True)</code></pre>
+
+                <h2>注意点：パフォーマンスへの影響</h2>
+                <p>
+                    バッファリングは、ディスクやコンソールへの書き込み処理の回数を減らすことでパフォーマンスを向上させる仕組みである。そのため、`PYTHONUNBUFFERED=1`を設定すると、特に出力処理が頻繁に発生するプログラムでは、理論上パフォーマンスがわずかに低下する可能性がある。ただし、一般的なログ出力などの用途では、この影響が問題になることはほとんどない。
+                </p>
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

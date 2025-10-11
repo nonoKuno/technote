@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeRF: Neural Radiance Fields の手法解説 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="https://nonokuno.github.io/technote/">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="https://nonokuno.github.io/technote/">ホーム</a> > <span>NeRF: Neural Radiance Fields の手法解説</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">Neural Radiance Fields (NeRF) の手法解説</h1>
+                <div class="article-meta">
+                    <span>公開日: 2025年9月4日</span>
+                    <span>読了時間: 約10分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">AI</span>
+                    <span class="tag">論文解説</span>
+                    <span class="tag">3D</span>
+                    <span class="tag">Computer Vision</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <h2>概要</h2>
+                <p>
+                    Neural Radiance Fields (NeRF) は、複数の視点から撮影された写真群をもとに、シーンの3D表現をニューラルネットワークの重みとして学習する手法である。学習されたモデルを用いることで、そのシーン内の任意の新しい視点からの画像を非常に高い品質で生成（レンダリング）することができる。
+                </p>
+                <p>
+                    NeRFの核となるアイデアは、シーンを「ある位置<code>(x, y, z)</code>からある方向<code>(θ, φ)</code>を見ると、どのような色<code>(r, g, b)</code>が見え、その空間にどれくらいの密度<code>(σ)</code>の物質が存在するか」を返す、連続的な5次元関数として表現することである。この関数をMLP（多層パーセプトロン）で近似し、古典的なボリュームレンダリングの手法と組み合わせることで、微分可能なレンダリングパイプラインを構築する。
+                </p>
+
+                <h2>1. Neural Radiance Fieldによるシーン表現</h2>
+                <p>
+                    シーンは連続的な5次元ベクトル関数として表現される。この関数は、入力として3次元の位置座標 <code><strong>x</strong> = (x, y, z)</code> と2次元の視線方向 <code><strong>d</strong> (単位ベクトル)</code> を受け取り、出力としてRGB色 <code><strong>c</strong> = (r, g, b)</code> とボリューム密度 <code>σ</code> を返す。
+                </p>
+                <blockquote>
+                    F<sub>Θ</sub>: (<strong>x</strong>, <strong>d</strong>) → (<strong>c</strong>, σ)
+                </blockquote>
+                <p>
+                    この関数 <code>F<sub>Θ</sub></code> は、MLP（ニューラルネットワーク）によって近似される。多視点間で矛盾のない一貫したシーンを表現するため、以下のような制約を設けている。
+                </p>
+                <ul>
+                    <li><strong>ボリューム密度 (σ)</strong>: 物体の形状を表し、視点方向には依存しない。そのため、位置座標 <code><strong>x</strong></code> のみから予測される。</li>
+                    <li><strong>色 (c)</strong>: 鏡面反射（スペキュラ）のように、見る角度によって変化する現象を捉えるため、位置座標 <code><strong>x</strong></code> と視線方向 <code><strong>d</strong></code> の両方から予測される。</li>
+                </ul>
+
+                <h3>ネットワーク構造</h3>
+                <p>
+                    MLPは以下のような構造をしている。
+                </p>
+                <ol>
+                    <li>入力された3D位置座標 <code><strong>x</strong></code> を8層の全結合層（ReLU活性化関数、256チャネル）に通す。</li>
+                    <li>8層目の出力から、ボリューム密度 <code>σ</code> と256次元の特徴ベクトルを得る。</li>
+                    <li>この特徴ベクトルと、入力された視線方向 <code><strong>d</strong></code> を結合する。</li>
+                    <li>結合したベクトルを1層の全結合層（ReLU活性化関数、128チャネル）に通し、最終的なRGB色 <code><strong>c</strong></code> を出力する。</li>
+                </ol>
+
+                <h2>2. Radiance Fieldを用いたボリュームレンダリング</h2>
+                <p>
+                    5DのNeural Radiance Fieldから画像をレンダリングするために、古典的なボリュームレンダリングの原理を用いる。あるカメラレイ（光線）<code><strong>r</strong>(t) = <strong>o</strong> + t<strong>d</strong></code>（<code><strong>o</strong></code>はカメラ原点、<code><strong>d</strong></code>はレイの方向）が最終的にどのような色になるかは、以下の積分式で計算できる。
+                </p>
+                <blockquote>
+                    C(<strong>r</strong>) = ∫<sub>t<sub>n</sub></sub><sup>t<sub>f</sub></sup> T(t) σ(<strong>r</strong>(t)) <strong>c</strong>(<strong>r</strong>(t), <strong>d</strong>) dt
+                    <br>
+                    ここで T(t) = exp(-∫<sub>t<sub>n</sub></sub><sup>t</sup> σ(<strong>r</strong>(s)) ds)
+                </blockquote>
+                <ul>
+                    <li><code>C(<strong>r</strong>)</code>: レイ <code><strong>r</strong></code> の最終的な色。</li>
+                    <li><code>t<sub>n</sub></code>, <code>t<sub>f</sub></code>: レンダリング範囲の近端と遠端。</li>
+                    <li><code>σ(<strong>r</strong>(t))</code>: レイ上の点 <code><strong>r</strong>(t)</code> での密度。</li>
+                    <li><code><strong>c</strong>(<strong>r</strong>(t), <strong>d</strong>)</code>: レイ上の点 <code><strong>r</strong>(t)</code> から方向 <code><strong>d</strong></code> に放射される色。</li>
+                    <li><code>T(t)</code>: 透過率。レイが <code>t<sub>n</sub></code> から <code>t</code> まで進む間に他の粒子に遮られなかった確率。</li>
+                </ul>
+
+                <h3>離散化と層化サンプリング</h3>
+                <p>
+                    この積分をコンピュータで計算するために、離散的な点の集まりで近似する。NeRFでは、<strong>層化サンプリング (Stratified Sampling)</strong> という手法を用いる。
+                </p>
+                <ol>
+                    <li>レイ上のレンダリング区間 <code>[t<sub>n</sub>, t<sub>f</sub>]</code> を <code>N</code> 個の均等な区間（ビン）に分割する。</li>
+                    <li>各ビンの中から、ランダムに1点ずつサンプル点を抽出する。</li>
+                </ol>
+                <p>
+                    このサンプリングにより、学習の過程でMLPが連続的な位置で評価されるため、高周波な詳細を持つシーンを表現することが可能になる。
+                    サンプリングされた点群 <code>(<strong>c</strong><sub>i</sub>, σ<sub>i</sub>)</code> から最終的なピクセルの色 <code>Ĉ(<strong>r</strong>)</code> は、以下の離散的なボリュームレンダリングの式（実質的にはアルファコンポジティング）で計算される。
+                </p>
+                <blockquote>
+                    Ĉ(<strong>r</strong>) = Σ<sub>i=1</sub><sup>N</sup> T<sub>i</sub> (1 - exp(-σ<sub>i</sub>δ<sub>i</sub>)) <strong>c</strong><sub>i</sub>
+                    <br>
+                    ここで T<sub>i</sub> = exp(-Σ<sub>j=1</sub><sup>i-1</sup> σ<sub>j</sub>δ<sub>j</sub>)
+                    <br>
+                    α<sub>i</sub> = 1 - exp(-σ<sub>i</sub>δ<sub>i</sub>)
+                </blockquote>
+                <p>
+                    この計算過程はすべて微分可能であるため、勾配降下法によるネットワークの最適化が可能である。
+                </p>
+            
+                <h2>3. Neural Radiance Fieldの最適化</h2>
+                <p>
+                    上記の基本的な構成だけでは、複雑なシーンを高解像度で表現するには不十分である。そのため、NeRFでは以下の2つの重要な改良を加えている。
+                </p>
+
+                <h3>3.1 Positional Encoding</h3>
+                <p>
+                    ニューラルネットワークは、一般的に低周波な関数を学習しやすいという特性がある。そのため、入力座標 <code>(x, y, z)</code> をそのまま利用すると、テクスチャや形状の細かい変化（高周波成分）を再現することが困難である。
+                    この問題に対処するため、入力座標を<strong>Positional Encoding</strong>によって高次元空間にマッピングしてからネットワークに入力する。
+                </p>
+                <blockquote>
+                    γ(p) = (sin(2<sup>0</sup>πp), cos(2<sup>0</sup>πp), ..., sin(2<sup>L-1</sup>πp), cos(2<sup>L-1</sup>πp))
+                </blockquote>
+                <p>
+                    この関数 <code>γ(・)</code> を位置座標 <code><strong>x</strong></code> と視線方向 <code><strong>d</strong></code> の各成分に適用する。これにより、ネットワークは高周波な関数を学習しやすくなり、レンダリング品質が劇的に向上する。
+                </p>
+
+                <h3>3.2 Hierarchical Volume Sampling (階層的ボリュームサンプリング)</h3>
+                <p>
+                    カメラレイに沿って一様に点をサンプリングする戦略は非効率である。なぜなら、空中の何もない空間や、他の物体に隠されて見えない領域にも多くの計算リソースを割いてしまうからである。そこで、より効率的にレンダリングを行うために階層的なサンプリング手法を導入する。
+                </p>
+                <p>
+                    この手法では、"Coarse"（粗い）と"Fine"（細かい）の2つのネットワークを同時に最適化する。
+                </p>
+                <ol>
+                    <li><strong>Coarse パス</strong>: まず、レイに沿って層化サンプリングで <code>N<sub>c</sub></code> 個の点をサンプリングし、Coarseネットワークで色と密度を評価する。</li>
+                    <li><strong>重みの計算</strong>: Coarseパスの結果から、レイ上の各点の色が最終的なピクセルの色にどれだけ貢献するかを示す重み <code>w<sub>i</sub></code> を計算する。この重み分布は、物体が存在する可能性が高い場所を示す。</li>
+                    <li><strong>Fine パス</strong>: この重み分布を確率密度関数（PDF）とみなし、逆変換サンプリングを用いてさらに <code>N<sub>f</sub></code> 個の点をサンプリングする。これにより、物体が存在する可能性が高い領域にサンプルが集中する。</li>
+                    <li><strong>最終レンダリング</strong>: 最初にサンプリングした <code>N<sub>c</sub></code> 点と、追加でサンプリングした <code>N<sub>f</sub></code> 点を合わせた全ての点でFineネットワークを評価し、最終的なピクセルの色を計算する。</li>
+                </ol>
+                <p>
+                    この階層的サンプリングにより、計算リソースをシーンの重要な部分に集中させ、レンダリングの品質と効率を向上させる。
+                </p>
+
+                <h3>損失関数</h3>
+                <p>
+                    学習時の損失関数は、CoarseとFineの両方のレンダリング結果と、実際の画像（Ground Truth）のピクセル色との二乗誤差の合計である。
+                </p>
+                <blockquote>
+                    L = Σ<sub><strong>r</strong></sub> [ ||Ĉ<sub>c</sub>(<strong>r</strong>) - C(<strong>r</strong>)||<sup>2</sup> + ||Ĉ<sub>f</sub>(<strong>r</strong>) - C(<strong>r</strong>)||<sup>2</sup> ]
+                </blockquote>
+                <p>
+                    Coarseネットワークの損失も計算に含めることで、Fineパスのためのサンプリング分布が適切に学習されるよう促す。
+                </p>
+            
+                <h2>まとめ</h2>
+                <p>
+                    NeRFは、シーンを連続的な5次元関数（Neural Radiance Field）として表現する革新的な手法である。この関数はMLPによってパラメータ化され、任意の位置と方向における色と密度を出力する。古典的なボリュームレンダリング手法を応用することで、この連続的な表現から2D画像を微分可能な形でレンダリングする。特に、高周波な詳細を捉えるための<strong>Positional Encoding</strong>と、効率的なレンダリングを実現する<strong>階層的ボリュームサンプリング</strong>が、高品質な結果を得る上で極めて重要である。これらの要素を組み合わせることで、NeRFは入力された画像群からシーンの複雑な形状と材質を学習し、フォトリアリスティックな任意視点画像を合成することを可能にした。
+                </p>
+                
+                <h2>原著論文</h2>
+                <p>本記事で解説した論文は、以下のリンクから閲覧できる。</p>
+                <p><a href="https://arxiv.org/abs/2003.08934" target="_blank" rel="noopener noreferrer">Mildenhall, B., et al. (2020). NeRF: Representing Scenes as Neural Radiance Fields for View Synthesis. In ECCV.</a></p>
+
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="https://nonokuno.github.io/technote/" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

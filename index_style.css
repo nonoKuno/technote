@@ -22,6 +22,30 @@
     margin: 0 auto;
 }
 
+/* 連載カード内のリンクリストのスタイル */
+.series-links ol {
+    list-style-type: decimal; /* 番号付きリスト */
+    padding-left: 20px;       /* 左側の余白を調整 */
+    margin-bottom: 15px;      /* 下の要素との間隔 */
+}
+
+.series-links li {
+    margin-bottom: 5px; /* 各項目間の少しの間隔 */
+}
+
+.series-links a {
+    text-decoration: none;
+    color: #0056b3; /* リンクの色をお好みで調整 */
+}
+
+.series-links a:hover {
+    text-decoration: underline; /* ホバー時に下線を表示 */
+}
+
+.main-content > .article-card {
+    margin-bottom: 40px;
+}
+
 /* ナビゲーションヘッダーのスタイル */
 .main-header {
     background: #2c3e50;
