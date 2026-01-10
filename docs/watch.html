@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>watchコマンドによる定点観測の手引き | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "watchコマンドによる定点観測の手引き | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/watch.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="../index.html">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="../index.html">ホーム</a> > <span>watchコマンドの使い方</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">watchコマンドによる定点観測の手引き</h1>
+                <div class="article-meta">
+                    <span>公開日: 2026年1月10日</span>
+                    <span>更新日: 2026年1月10日</span>
+                    <span>読了時間: 約6分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">Linux</span>
+                    <span class="tag">GPU</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>Linux環境において、プロセスの継続的な監視や、nvidia-smiなどの出力をリアルタイムで確認したい場面は多い。</p>
+                <p>本記事では、定点観測に最適な <code>watch</code> コマンドの基本的な使い方と、GPUの状態監視への応用について解説する。</p>
+
+                <h2>watchコマンドとは何か</h2>
+                <p>Linuxにおいて、コマンドを定期的に実行し、その出力を画面いっぱいに表示し続けるためのユーティリティである。</p>
+                <p>ログが流れていく <code>tail -f</code> とは異なり、<code>watch</code> は画面をクリアして常に最新の結果を表示する点が特徴だ。刻一刻と変化するシステムの状態や、ジョブの進捗状況をリアルタイムで監視する際に極めて重宝する。</p>
+
+                <h2>基本的な構文</h2>
+                <p>最も基本的な使い方は、監視したいコマンドの前に <code>watch</code> を付けるだけである。デフォルトでは2秒間隔でコマンドが再実行され、画面が更新される。終了するには <code>Ctrl + C</code> を押下する。</p>
+
+                <pre><code>$ watch [オプション] コマンド</code></pre>
+
+                <h2>nvidia-smiを出しっぱなしにする方法</h2>
+                <p>GPUの学習状況や推論負荷をモニタリングする際、<code>nvidia-smi</code> を単発で連打するのは非効率である。ここで <code>watch</code> コマンドを使用するのが定時である。</p>
+
+                <h3>1. 1秒更新で監視する（推奨）</h3>
+                <p>機械学習のトレーニング中など、細かく負荷を見たい場合は <code>-n</code> オプションで間隔（秒）を指定する。</p>
+                <pre><code>$ watch -n 1 nvidia-smi</code></pre>
+                <blockquote>
+                ※ <code>-n 1</code> はインターバルを1秒に設定するという意味である。0.1秒などの小数指定も可能だが、<code>nvidia-smi</code> 自体の実行コストを考慮すると1秒程度が適切である。
+                </blockquote>
+
+                <h3>2. 変化した箇所をハイライトする</h3>
+                <p>数値の変動を目視しやすくするために <code>-d</code> (differences) オプションを併用するとよい。前回の更新から変化があった部分がハイライト表示される。</p>
+                <pre><code>$ watch -n 1 -d nvidia-smi</code></pre>
+
+                <h2>その他の有用なオプション</h2>
+                <ul>
+                    <li><strong>-t (--no-title)</strong>: ヘッダー（コマンド名や現在時刻）を非表示にし、コマンド出力のみを表示する。</li>
+                    <li><strong>-c (--color)</strong>: コマンドが出力するカラーコードを解釈して表示する（<code>ls --color</code> などを監視する場合に有効）。</li>
+                    <li><strong>-g (--chgexit)</strong>: 出力内容に変化があった時点で <code>watch</code> を終了する。特定のステータス変化待ちに使用する。</li>
+                </ul>
+
+                <h2>まとめ</h2>
+                <p><code>nvidia-smi</code> のループオプション（<code>-l</code>）を使用する方法もあるが、<code>watch</code> コマンドの方が画面が固定され、視認性が高い。</p>
+                <p>GPUリソースの監視に限らず、ファイル生成の監視（<code>ls -l</code>）やディスク容量の監視（<code>df -h</code>）など、あらゆる場面で応用が効くため、<code>watch -n 1</code> のイディオムは習得しておくべきである。</p>
+
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="../index.html" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:site_name" content="TechNote - nonoKuno 技術系ブログ">
+    <title>GiBとTiB：ストレージ容量の「正しい」単位 | nonoKuno - TechNote</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="docsStyle.css">
+    <link rel="icon" href="../favicon.ico">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "GiBとTiB：ストレージ容量の「正しい」単位 | nonoKuno - TechNote",
+      "url": "https://nonokuno.github.io/technote/gibtib.html"
+    }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="site-title">
+                <a href="../index.html">TechNote</a>
+            </div>
+            <nav class="breadcrumb">
+                <a href="../index.html">ホーム</a> > <span>GiBとTiB：ストレージ容量の「正しい」単位</span>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="article-container">
+            <header class="article-header">
+                <h1 class="article-title">GiBとTiB：ストレージ容量の「正しい」単位</h1>
+                <div class="article-meta">
+                    <span>公開日: 2026年1月10日</span>
+                    <span>更新日: 2026年1月10日</span>
+                    <span>読了時間: 約5分</span>
+                </div>
+                <div class="article-tags">
+                    <span class="tag">IT基礎</span>
+                </div>
+            </header>
+
+            <div class="article-content">
+                <p>GiB（ギビバイト）やTiB（テビバイト）といった単位は、コンピュータのデータ量をより正確に表すために制定されたものである。</p>
+                <p>背景には、コンピュータ（2進数）と人間（10進数）における「容量の数え方」の違いによる歴史的な混乱がある。</p>
+
+                <h2>GiB/TiBはなぜ存在するか</h2>
+                
+                <h3>1. 2進数と10進数のズレ</h3>
+                <p>もともとコンピュータの世界では、2の10乗＝1024を基準に「キロ」を計算していた（例：1KB = 1024バイト）。しかし、日常生活で使われる「キロ」は10の3乗＝1000である（例：1km = 1000m）。単位がメガ、ギガ、テラと大きくなるにつれ、この「1024」と「1000」の差が拡大し、容量の定義が曖昧になった。</p>
+
+                <h3>2. メーカーとOSの表記違い</h3>
+                <p>特にストレージメーカー（HDDやSSD）は、容量を大きく見せるため10進数（例：1TB = 1,000,000,000,000バイト）で製品を表記した。対照的に、WindowsなどのOSは、従来通り2進数（例：1024<sup>4</sup> バイト）で容量を計算・表示した。</p>
+                <p>この結果、「1TBのHDDを購入したのに、PC上では約931GiB（ギビバイト）と表示される」という現象が発生し、利用者の混乱を招いた。</p>
+
+                <h3>3. 解決策としての「2進接頭辞」</h3>
+                <p>この混乱を解消するため、IEC（国際電気標準会議）は「2進接頭辞」という新しい単位を定めた。これがGiB（ギビバイト）やTiB（テビバイト）であり、「bi」は「バイナリ（2進数）」を意味する。</p>
+
+                <h2>GB/TBとの関係</h2>
+                <p>GB/TBは「1000ごと」、GiB/TiBは「1024ごと」の単位である。</p>
+
+                <h3>10進接頭辞 (SI接頭辞)</h3>
+                <ul>
+                    <li><strong>GB (ギガバイト)</strong>: 1000<sup>3</sup> = 1,000,000,000 バイト</li>
+                    <li><strong>TB (テラバイト)</strong>: 1000<sup>4</sup> = 1,000,000,000,000 バイト</li>
+                    <li>主な用途: ストレージ製品の容量表記、通信速度 (Gbps)</li>
+                </ul>
+                
+                <h3>2進接頭辞 (IEC接頭辞)</h3>
+                <ul>
+                    <li><strong>GiB (ギビバイト)</strong>: 1024<sup>3</sup> = 1,073,741,824 バイト</li>
+                    <li><strong>TiB (テビバイト)</strong>: 1024<sup>4</sup> = 1,099,511,627,776 バイト</li>
+                    <li>主な用途: OSでの容量・メモリ表示、ソフトウェア開発</li>
+                </ul>
+
+                <h3>比較</h3>
+                <p>2進数ベースのGiB/TiBは、10進数ベースのGB/TBよりも実際のデータ量が少し大きくなる。これにより、OS上の表示がカタログスペックより少なく見える現象が起こる。</p>
+                
+                <blockquote>
+                    <ul>
+                        <li>1 GiB ≈ 1.074 GB (約7.4%大きい)</li>
+                        <li>1 TiB ≈ 1.099 TB (約9.9%大きい)</li>
+                    </ul>
+                    これにより、「1TBのHDDがOS上で約0.909 TiB（または約931 GiB）と表示される」理由が明確になる。
+                </blockquote>
+
+            </div>
+        </article>
+
+        <nav class="navigation">
+            <a href="../index.html" class="back-to-home">記事一覧に戻る</a>
+        </nav>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 TechNote. All rights reserved.</p>
+    </footer>
+</body>
+</html>
